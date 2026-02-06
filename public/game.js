@@ -5,7 +5,7 @@ const config = {
     parent: 'game-container',
     physics: {
         default: 'arcade',
-        arcade: { gravity: { y: 5 } }
+        arcade: { gravity: { y: 5000 } }
     },
     scene: { preload, create }
 };
