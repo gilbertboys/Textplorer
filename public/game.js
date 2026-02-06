@@ -15,7 +15,7 @@ let player;
 let cursors;
 
 function preload() {
-    //load txt files
+    this.load.image('playerFigure', 'stickman.png')
 }
 
 function create() {
@@ -24,10 +24,10 @@ function create() {
         fill: '#fff' 
     }).setOrigin(0.5);
 
-    player = this.add.rectangle(400, 300, 50, 50, 0x00ff00);
-    this.physics.add.existing(player);
-    player.body.setCollideWorldBounds(true);
-
+    player = this.physics.add.sprite(400, 300, 'playerFigure');
+    player.setScale(0.5);
+    player.setCollideWorldBounds(true);
+    
     cursors = this.input.keyboard.addKeys({
         up: Phaser.Input.Keyboard.KeyCodes.W,
         down: Phaser.Input.Keyboard.KeyCodes.S,
