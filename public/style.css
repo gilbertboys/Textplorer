@@ -125,3 +125,42 @@ footer {
     opacity: 0.5;
     z-index: 10;
 }
+/* ================================
+   Styles for File Upload + Parser
+   ================================ */
+
+.upload-panel {
+    margin-top: 20px;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.upload-panel.visible {
+    display: flex;
+}
+
+.upload-panel input {
+    color: #919191;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.upload-status {
+    margin: 0;
+}
+
+.upload-output {
+    max-width: 700px;
+    width: 90vw;
+    max-height: 220px;
+    overflow: auto;
+    background: #000;
+    padding: 10px;
+    border: 1px solid #9cb4f1;
+    text-align: left;
+    color: #eaeaea;
+    border-radius: 6px;
+    white-space: pre-wrap;
+}
+
