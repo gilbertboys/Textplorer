@@ -1,3 +1,4 @@
+/* --- General --- */
 body {
     margin: 0;
     font-family: 'Courier New', Courier, monospace;
@@ -7,6 +8,7 @@ body {
     overflow: hidden;
 }
 
+/* --- Header / Main --- */
 .main {
     height: 100vh;
     display: flex;
@@ -16,6 +18,103 @@ body {
     text-align: center;
 }
 
+.main-title {
+    font-size: 4rem;
+    margin-bottom: 0;
+}
+
+.subtitle {
+    margin-top: 0.2em;
+}
+
+/* --- Menu --- */
+.main-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 1em 0 0 0;
+    display: flex;
+    gap: 20px;
+}
+
+.main-menu ul li {
+    display: flex;
+    align-items: stretch; /* makes all buttons same height */
+}
+
+/* --- Menu Buttons (both <a> and <button>) --- */
+.menu-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 16px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1rem;
+    color: #975439;
+    text-decoration: none;
+    border: 1px solid #9cb4f1;
+    background: none;
+    cursor: pointer;
+    height: 40px; /* fixed height for consistency */
+}
+
+.menu-btn:hover {
+    background: #ffc75f;
+    color: #111;
+}
+
+/* Ensure button has same styles as <a> */
+#about-btn {
+    all: unset;        /* optional, removes default button styles */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 16px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1rem;
+    color: #975439;
+    border: 1px solid #9cb4f1;
+    background: none;
+    cursor: pointer;
+    height: 40px;
+}
+
+#about-btn:hover {
+    background: #ffc75f;
+    color: #111;
+}
+/* --- About Screen --- */
+#about-screen {
+    display: none;
+    position: fixed;      /* stay on top of everything */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #111;
+    color: #fff;
+    z-index: 1000;        /* higher than header/footer */
+    overflow: auto;
+    padding: 80px 20px;
+    box-sizing: border-box;
+}
+
+/* Optional: remove max-width so it stretches fully */
+#about-screen .description-section-content {
+    max-width: 800px;   /* can wrap content for readability */
+    margin: 0 auto;
+}
+
+
+#about-screen h2 {
+    margin-top: 0;
+}
+
+.esc-note {
+    margin-top: 2em;
+    font-style: italic;
+}
+
+/* --- Footer --- */
 footer {
     position: absolute;
     bottom: 20px;
@@ -26,37 +125,6 @@ footer {
     opacity: 0.5;
     z-index: 10;
 }
-
-.main-title {
-    font-size: 4rem;
-    margin-bottom: 0;
-}
-
-.main-menu ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    gap: 20px;
-}
-
-.menu-btn {
-    text-decoration: none;
-    color: #975439;
-    border: 1px solid #9cb4f1;
-    padding: 8px 16px;
-}
-
-.menu-btn:hover {
-    background: #ffc75f;
-    color: #111;
-}
-
-.description-section {
-    padding: 80px 20px;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
 /* ================================
    Styles for File Upload + Parser
    ================================ */
