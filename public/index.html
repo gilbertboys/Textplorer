@@ -8,76 +8,88 @@
 </head>
 <body>
 
-<header class="main">
-    <div class="main-content">
-        <h1 class="main-title">TEXTPLORER</h1>
-        <p class="subtitle">- Take .txt Files to a <u><b>Whole New Level</b></u> -</p>
-        
-        <nav class="main-menu">
+    <header class="main">
+        <div class="main-content">
+            <h1 class="main-title">TEXTPLORER</h1>
+            <p class="subtitle">- Take .txt Files to a <u><b>Whole New Level</b></u> -</p>
+            
+            <nav class="main-menu">
+                <ul>
+                    <li><a class="menu-btn">Levels</a></li>
+                    <li><a class="menu-btn" id="uploadMenuBtn">Upload Level</a></li>
+                    <li><button id="about-btn" class="menu-btn">About</button></li>
+                    <li><a class="menu-btn">Source Code</a></li>
+                </ul>
+            </nav>
+
+            <!-- Upload Panel (hidden until user clicks "Upload Level") -->
+            <div id="uploadPanel" class="upload-panel">
+                <input id="levelFile" type="file" accept=".txt" />
+                <button id="uploadBtn" class="menu-btn">Parse Level</button>
+
+                <p id="status" class="upload-status"></p>
+
+                <pre id="output" class="upload-output"></pre>
+            </div>
+
+        </div>
+    </header>
+
+    <footer class="site-footer">
+        <p>&copy; Textplorer Co.</p>
+        <p>Jacob Munly, Norman Nomie, Drew Inglesby, Jack Dunlap</p>
+    </footer>
+
+    <!-- About Screen (hidden by default) -->
+    <div id="about-screen">
+        <div class="description-section-content">
+            <h2>About Textplorer</h2>
+            <p>Textplorer is an online platforming game that turns .txt files into a playable environment!</p>
+            <p>Upload a .txt file from your computer to be able to jump around inside it.</p>
+            <h3>GAME RULES:</h3>
             <ul>
-                <li><a href="#" class="menu-btn">Play Sample Level</a></li>
-                <li><a href="#" class="menu-btn">Upload Level</a></li>
-                <li><button id="about-btn" class="menu-btn">About</button></li>
-                <li><a href="#" class="menu-btn">Source Code</a></li>
+                <li>Use WASD to move</li>
+                <li>All characters have collision that roughly follows what they look like</li>
             </ul>
-        </nav>
+            <h3>SPECIAL CHARACTERS:</h3>
+            <ul>
+                <li><b>*</b> Is player spawn</li>
+                <li><b>$</b> Is the goal, the area you are trying to reach</li>
+                <li><b>^</b> Is a spike, if you touch it you will restart</li>
+            </ul>
+            <p class="esc-note">Press Esc to return to main menu</p>
+        </div>
     </div>
-</header>
 
-<footer class="site-footer">
-    <p>&copy; Textplorer Co.</p>
-    <p>Jacob Munly, Norman Nomie, Drew Inglesby, Jack Dunlap</p>
-</footer>
+    <!-- JS for About screen -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const aboutBtn = document.getElementById('about-btn');
+        const mainHeader = document.querySelector('header.main');
+        const aboutScreen = document.getElementById('about-screen');
 
-<!-- About Screen (hidden by default) -->
-<div id="about-screen">
-    <div class="description-section-content">
-        <h2>About Textplorer</h2>
-        <p>Textplorer is an online platforming game that turns .txt files into a playable environment!</p>
-        <p>Upload a .txt file from your computer to be able to jump around inside it.</p>
-        <h3>GAME RULES:</h3>
-        <ul>
-            <li>Use WASD to move</li>
-            <li>All characters have collision that roughly follows what they look like</li>
-        </ul>
-        <h3>SPECIAL CHARACTERS:</h3>
-        <ul>
-            <li><b>*</b> Is player spawn</li>
-            <li><b>$</b> Is the goal, the area you are trying to reach</li>
-            <li><b>^</b> Is a spike, if you touch it you will restart</li>
-        </ul>
-        <p class="esc-note">Press Esc to return to main menu</p>
-    </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const aboutBtn = document.getElementById('about-btn');
-    const mainHeader = document.querySelector('header.main');
-    const aboutScreen = document.getElementById('about-screen');
-
-    function showAbout(e) {
-        if (e) e.preventDefault();
-        mainHeader.style.display = 'none';
-        aboutScreen.style.display = 'block';
-        document.body.style.overflow = 'auto';
-    }
-
-    function hideAbout() {
-        aboutScreen.style.display = 'none';
-        mainHeader.style.display = '';
-        document.body.style.overflow = 'hidden';
-    }
-
-    aboutBtn.addEventListener('click', showAbout);
-
-    document.addEventListener('keydown', function(e) {
-        if (aboutScreen.style.display === 'block' && (e.key === 'Escape' || e.key === 'Esc')) {
-            hideAbout();
+        function showAbout(e) {
+            if (e) e.preventDefault();
+            mainHeader.style.display = 'none';
+            aboutScreen.style.display = 'block';
+            document.body.style.overflow = 'auto';
         }
+
+        function hideAbout() {
+            aboutScreen.style.display = 'none';
+            mainHeader.style.display = '';
+            document.body.style.overflow = 'hidden';
+        }
+
+        aboutBtn.addEventListener('click', showAbout);
+
+        document.addEventListener('keydown', function(e) {
+            if (aboutScreen.style.display === 'block' && (e.key === 'Escape' || e.key === 'Esc')) {
+                hideAbout();
+            }
+        });
     });
-});
-</script>
+    </script>
 
     <!-- JS for Upload Level UI -->
     <script src="parser-ui.js"></script>
