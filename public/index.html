@@ -8,37 +8,30 @@
 </head>
 <body>
 
-    <header class="main">
-        <div class="main-content">
-            <h1 class="main-title">TEXTPLORER</h1>
-            <p class="subtitle">- Take .txt Files to a <u><b>Whole New Level</b></u> -</p>
-            
-            <nav class="main-menu">
-                <ul>
-                    <li><a class="menu-btn">Play Sample Level</a></li>
-                    <!--This menu button will bring the user to a new screen with all the levels, including search features, leaderboards, where to play, etc.-->
-                    <li><a class="menu-btn">Upload Level</a></li>
-                    <!--This button will bring the user to an upload .txt files screen where they can create and upload files directly to the site-->
-                    <li><button id="about-btn" class="menu-btn">About</button></li>
-                    <!--This button will describe our program and show how we created it-->
-                    <li><a class="menu-btn">Source Code</a></li>
-                    <!--This button allows for users to view our source code as it is open-source-->
-                </ul>
-            </nav>
-        </div>
-    </header>
+<header class="main">
+    <div class="main-content">
+        <h1 class="main-title">TEXTPLORER</h1>
+        <p class="subtitle">- Take .txt Files to a <u><b>Whole New Level</b></u> -</p>
+        
+        <nav class="main-menu">
+            <ul>
+                <li><a href="#" class="menu-btn">Play Sample Level</a></li>
+                <li><a href="#" class="menu-btn">Upload Level</a></li>
+                <li><button id="about-btn" class="menu-btn">About</button></li>
+                <li><a href="#" class="menu-btn">Source Code</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
 
-    <footer class="site-footer">
-        <p>
-            &copy; Textplorer Co.
-        </p>
-        <p>
-            Jacob Munly, Norman Nomie, Drew Inglesby, Jack Dunlap
-        </p>
-    </footer>
+<footer class="site-footer">
+    <p>&copy; Textplorer Co.</p>
+    <p>Jacob Munly, Norman Nomie, Drew Inglesby, Jack Dunlap</p>
+</footer>
 
-    <!-- About Screen (hidden by default) -->
-    <div id="about-screen" class="description-section" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#111; color:#fff; z-index:100; overflow:auto;">
+<!-- About Screen (hidden by default) -->
+<div id="about-screen">
+    <div class="description-section-content">
         <h2>About Textplorer</h2>
         <p>Textplorer is an online platforming game that turns .txt files into a playable environment!</p>
         <p>Upload a .txt file from your computer to be able to jump around inside it.</p>
@@ -53,41 +46,38 @@
             <li><b>$</b> Is the goal, the area you are trying to reach</li>
             <li><b>^</b> Is a spike, if you touch it you will restart</li>
         </ul>
-        <p style="margin-top:2em; font-style:italic;">Press Esc to return to main menu</p>
+        <p class="esc-note">Press Esc to return to main menu</p>
     </div>
+</div>
 
-    <script>
-    // About button logic
-    document.addEventListener('DOMContentLoaded', function() {
-        const aboutBtn = document.getElementById('about-btn');
-        const mainHeader = document.querySelector('header.main');
-        const aboutScreen = document.getElementById('about-screen');
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const aboutBtn = document.getElementById('about-btn');
+    const mainHeader = document.querySelector('header.main');
+    const aboutScreen = document.getElementById('about-screen');
 
-        function showAbout(e) {
-            if (e) e.preventDefault();
-            mainHeader.style.display = 'none';
-            aboutScreen.style.display = 'block';
-            document.body.style.overflow = 'auto';
+    function showAbout(e) {
+        if (e) e.preventDefault();
+        mainHeader.style.display = 'none';
+        aboutScreen.style.display = 'block';
+        document.body.style.overflow = 'auto';
+    }
+
+    function hideAbout() {
+        aboutScreen.style.display = 'none';
+        mainHeader.style.display = '';
+        document.body.style.overflow = 'hidden';
+    }
+
+    aboutBtn.addEventListener('click', showAbout);
+
+    document.addEventListener('keydown', function(e) {
+        if (aboutScreen.style.display === 'block' && (e.key === 'Escape' || e.key === 'Esc')) {
+            hideAbout();
         }
-        function hideAbout() {
-            aboutScreen.style.display = 'none';
-            mainHeader.style.display = '';
-            document.body.style.overflow = 'hidden';
-        }
-
-        if (aboutBtn) {
-            aboutBtn.addEventListener('click', showAbout);
-            aboutBtn.setAttribute('tabindex', '0');
-            aboutBtn.style.cursor = 'pointer';
-        }
-
-        document.addEventListener('keydown', function(e) {
-            if (aboutScreen.style.display === 'block' && (e.key === 'Escape' || e.key === 'Esc')) {
-                hideAbout();
-            }
-        });
     });
-    </script>
+});
+</script>
 
 </body>
 </html>
