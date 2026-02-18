@@ -16,26 +16,33 @@
             <nav class="main-menu">
                 <ul>
                     <li><a class="menu-btn">Levels</a></li>
-                    <!--This menu button will bring the user to a new screen with all the levels, including search features, leaderboards, where to play, etc.-->
-                    <li><a class="menu-btn">Upload Level</a></li>
-                    <!--This button will bring the user to an upload .txt files screen where they can create and upload files directly to the site-->
+                    <li><a class="menu-btn" id="uploadMenuBtn">Upload Level</a></li>
                     <li><a class="menu-btn">About</a></li>
-                    <!--This button will describe our program and show how we created it-->
                     <li><a class="menu-btn">Source Code</a></li>
-                    <!--This button allows for users to view our source code as it is open-source-->
                 </ul>
             </nav>
+
+            <!-- Upload Panel (hidden until user clicks "Upload Level") -->
+            <div id="uploadPanel" class="upload-panel">
+                <input id="levelFile" type="file" accept=".txt" />
+                <button id="uploadBtn" class="menu-btn">Parse Level</button>
+
+                <p id="status" class="upload-status"></p>
+
+                <pre id="output" class="upload-output"></pre>
+            </div>
+
         </div>
     </header>
 
     <footer class="site-footer">
-        <p>
-            &copy; Textplorer Co.
-        </p>
-        <p>
-            Jacob Munly, Norman Nomie, Drew Inglesby, Jack Dunlap
-        </p>
+        <p>&copy; Textplorer Co.</p>
+        <p>Jacob Munly, Norman Nomie, Drew Inglesby, Jack Dunlap</p>
     </footer>
+
+    <!-- JS for Upload Level UI -->
+    <script src="parser-ui.js"></script>
 
 </body>
 </html>
+
