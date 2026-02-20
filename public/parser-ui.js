@@ -21,6 +21,14 @@ document.addEventListener("DOMContentLoaded", () => {
     output.textContent = "";
   });
 
+    // Hide upload panel on ESC
+    document.addEventListener("keydown", (e) => {
+      if (uploadPanel.classList.contains("visible") && (e.key === "Escape" || e.key === "Esc")) {
+        uploadPanel.classList.remove("visible");
+        status.textContent = "";
+        output.textContent = "";
+      }
+    });
   // Upload + parse
   uploadBtn.addEventListener("click", async () => {
     output.textContent = "";
