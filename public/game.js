@@ -78,42 +78,63 @@ function renderLevel(levelData) {
     levelData.walls.forEach(wall => {
         const x = wall.x * cellSize + cellSize / 2;
         const y = wall.y * cellSize + cellSize / 2;
-        const wallSprite = scene.add.rectangle(x, y, cellSize, cellSize, 0x8b4513);
-        scene.physics.add.existing(wallSprite, true); // true = static body
-        walls.add(wallSprite);
+        // Render the actual character as white text
+        const wallText = scene.add.text(x, y, wall.symbol || '#', {
+            fontSize: `${cellSize}px`,
+            fill: '#ffffff',
+            fontFamily: 'monospace'
+        }).setOrigin(0.5);
+        scene.physics.add.existing(wallText, true); // true = static body
+        wallText.body.setSize(cellSize, cellSize);
+        walls.add(wallText);
     });
 
     // Create spikes
     levelData.spikes.forEach(spike => {
         const x = spike.x * cellSize + cellSize / 2;
         const y = spike.y * cellSize + cellSize / 2;
-        const spikeSprite = scene.add.triangle(x, y, cellSize / 2, 0, cellSize, cellSize, 0, cellSize, 0xff0000);
-        scene.physics.add.existing(spikeSprite);
-        spikeSprite.body.setAllowGravity(false);
-        spikeSprite.body.setImmovable(true);
-        spikes.add(spikeSprite);
-        spikeSprite.isDangerous = true;
+        const spikeText = scene.add.text(x, y, '^', {
+            fontSize: `${cellSize}px`,
+            fill: '#ff0000',
+            fontFamily: 'monospace'
+        }).setOrigin(0.5);
+        scene.physics.add.existing(spikeText);
+        spikeText.body.setAllowGravity(false);
+        spikeText.body.setImmovable(true);
+        spikeText.body.setSize(cellSize, cellSize);
+        spikes.add(spikeText);
+        spikeText.isDangerous = true;
     });
 
     // Create springs 
     levelData.springs.forEach(spring => {
         const x = spring.x * cellSize + cellSize / 2;
         const y = spring.y * cellSize + cellSize / 2;
-        const springSprite = scene.add.rectangle(x, y, cellSize * 0.8, cellSize * 0.3, 0xffff00);
-        scene.physics.add.existing(springSprite);
-        springSprite.body.setAllowGravity(false);
-        springSprite.body.setImmovable(true);
-        springs.add(springSprite);
-        springSprite.isSpring = true;
+        const springText = scene.add.text(x, y, 'Z', {
+            fontSize: `${cellSize}px`,
+            fill: '#ffff00',
+            fontFamily: 'monospace'
+        }).setOrigin(0.5);
+        scene.physics.add.existing(springText);
+        springText.body.setAllowGravity(false);
+        springText.body.setImmovable(true);
+        springText.body.setSize(cellSize, cellSize);
+        springs.add(springText);
+        springText.isSpring = true;
     });
 
     // Create finish point - disable gravity, make immovable
     const finishX = levelData.finish.x * cellSize + cellSize / 2;
     const finishY = levelData.finish.y * cellSize + cellSize / 2;
-    finish = scene.add.star(finishX, finishY, 5, 20, 40, 0x00ff00);
+    finish = scene.add.text(finishX, finishY, '#', {
+        fontSize: `${cellSize}px`,
+        fill: '#00ff00',
+        fontFamily: 'monospace'
+    }).setOrigin(0.5);
     scene.physics.add.existing(finish);
     finish.body.setAllowGravity(false);
     finish.body.setImmovable(true);
+    finish.body.setSize(cellSize, cellSize);
     finish.isFinish = true;
 
     // Create player at spawn
