@@ -2,7 +2,7 @@
 // Handles:
 // 1) showing/hiding upload panel when "Upload Level" is clicked
 // 2) uploading a .txt file to /api/parse-level
-// 3) printing parsed JSON to the page
+// 3) launching the game with the parsed level
 
 document.addEventListener("DOMContentLoaded", () => {
   const uploadMenuBtn = document.getElementById("uploadMenuBtn");
@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const status = document.getElementById("status");
   const output = document.getElementById("output");
+
+  const gameContainer = document.getElementById("game-container");
+  const mainHeader = document.querySelector("header.main");
 
   // Toggle visibility of the upload UI
   uploadMenuBtn.addEventListener("click", () => {
@@ -29,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
         output.textContent = "";
       }
     });
-  // Upload + parse
+  // Upload + parse + play
   uploadBtn.addEventListener("click", async () => {
     output.textContent = "";
     status.textContent = "";
@@ -65,8 +68,19 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      status.textContent = "Parsed successfully ✅";
-      output.textContent = JSON.stringify(data, null, 2);
+      status.textContent = "Parsed successfully ✅ Launching game...";
+
+      // Set level data and show game
+      currentLevelData = data;
+      uploadPanel.classList.remove("visible");
+      mainHeader.style.display = "none";
+      gameContainer.style.display = "flex";
+      document.body.style.overflow = "hidden";
+
+      // Restart game scene with uploaded level data
+      game.scene.stop("default");
+      game.scene.start("default", { levelData: data });
+
     } catch (err) {
       status.textContent = "Request failed ❌";
       output.textContent = String(err);
