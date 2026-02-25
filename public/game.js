@@ -68,12 +68,6 @@ function renderLevel(levelData) {
     const scene = game.scene.scenes[0];
     const cellSize = 40; // pixels per character
 
-    // Add title
-    scene.add.text(400, 10, 'TEXTPLORER: WASD to move, ESC for menu', {
-        fontSize: '16px',
-        fill: '#fff'
-    }).setOrigin(0.5, 0);
-
     // Create walls - add to static group for proper collision
     levelData.walls.forEach(wall => {
         const x = wall.x * cellSize + cellSize / 2;
