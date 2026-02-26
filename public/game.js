@@ -30,8 +30,8 @@ function create(data) {
 
     // Initialize groups for physics interactions
     walls = this.physics.add.staticGroup();
-    spikes = this.physics.add.group();
-    springs = this.physics.add.group();
+    spikes = this.physics.add.group({ allowGravity: false, immovable: true });
+    springs = this.physics.add.group({ allowGravity: false, immovable: true });
 
     // If we have level data (passed via launch or global), render it
     const levelData = data?.levelData || currentLevelData;
@@ -176,6 +176,10 @@ function handleFinishCollision(player, finish) {
     const scene = game.scene.scenes[0];
     scene.add.text(400, 300, 'LEVEL COMPLETE!', {
         fontSize: '48px',
+        fill: '#00ff00'
+    }).setOrigin(0.5);
+    scene.add.text(400, 360, 'Press Esc to return to main menu', {
+        fontSize: '24px',
         fill: '#00ff00'
     }).setOrigin(0.5);
     scene.physics.pause();
