@@ -310,6 +310,6 @@ function update() {
     }
 
     if (cursors.up.isDown && player.body.blocked.down) {
-        player.body.setVelocityY(-150);
+        player.body.setVelocityY(-250);
     }
 }
