@@ -4,10 +4,17 @@
   "description": "Textplorer Phaser Game",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "express": "^4.22.1",
     "multer": "^2.0.2"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0"
   }
+
 }
+
