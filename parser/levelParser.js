@@ -45,6 +45,7 @@ function parseLevelText(levelText) {
   const spikes = [];
   const springs = [];
   const walls = [];
+  const monsters = [];
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -59,6 +60,11 @@ function parseLevelText(levelText) {
 
       if (ch === "Z") {
         springs.push({ x, y });
+        continue;
+      }
+
+      if (ch === "M") {
+        monsters.push({ x, y });
         continue;
       }
 
@@ -90,6 +96,7 @@ function parseLevelText(levelText) {
     spikes,
     springs,
     walls,
+    monsters,
     grid, // helpful for debugging + later rendering
   };
 }
