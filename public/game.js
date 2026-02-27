@@ -1,7 +1,7 @@
 const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 1280,
+    height: 720,
     parent: 'game-container',
     physics: {
         default: 'arcade',
@@ -39,16 +39,16 @@ function create(data) {
     if (levelData) {
         renderLevel.call(this, levelData);
     } else {
-        this.add.text(400, 100, 'TEXTPLORER: WASD to move', {
+        this.add.text(640, 100, 'TEXTPLORER: WASD to move', {
             fontSize: '32px',
             fill: '#fff'
         }).setOrigin(0.5);
 
-        player = this.physics.add.sprite(400, 300, 'playerFigure');
+        player = this.physics.add.sprite(640, 360, 'playerFigure');
         player.setScale(0.5);
         player.setCollideWorldBounds(true);
 
-        const logo = this.add.rectangle(400, 300, 50, 50, 0x00ff00);
+        const logo = this.add.rectangle(640, 360, 50, 50, 0x00ff00);
         this.physics.add.existing(logo);
         logo.body.setBounce(0.8).setCollideWorldBounds(true);
     }
@@ -67,6 +67,22 @@ function create(data) {
 function renderLevel(levelData) {
     const scene = game.scene.scenes[0];
     const cellSize = 40; // pixels per character
+
+    // Calculate level dimensions based on all elements
+    const allElements = [
+        ...levelData.walls,
+        ...levelData.spikes,
+        ...levelData.springs,
+        levelData.spawn,
+        levelData.finish
+    ];
+    const maxX = Math.max(...allElements.map(e => e.x)) + 1;
+    const maxY = Math.max(...allElements.map(e => e.y)) + 1;
+    const levelWidth = Math.max(maxX * cellSize, config.width);
+    const levelHeight = Math.max(maxY * cellSize, config.height);
+
+    // Set world bounds to match level size
+    scene.physics.world.setBounds(0, 0, levelWidth, levelHeight);
 
     // Create walls - add to static group for proper collision
     levelData.walls.forEach(wall => {
@@ -147,6 +163,10 @@ function renderLevel(levelData) {
     player.setCollideWorldBounds(true);
     player.setBodySize(30, 40);
 
+    // Set up camera to follow player
+    scene.cameras.main.setBounds(0, 0, levelWidth, levelHeight);
+    scene.cameras.main.startFollow(player, true, 0.1, 0.1);
+
     // Set up collisions
     scene.physics.add.collider(player, walls);
     scene.physics.add.collider(spikes, walls);
@@ -174,14 +194,22 @@ function handleSpringCollision(player, spring) {
 function handleFinishCollision(player, finish) {
     // Level complete!
     const scene = game.scene.scenes[0];
-    scene.add.text(400, 300, 'LEVEL COMPLETE!', {
+    const centerX = scene.cameras.main.scrollX + config.width / 2;
+    const centerY = scene.cameras.main.scrollY + config.height / 2;
+    const completeText = scene.add.text(centerX, centerY, 'LEVEL COMPLETE!', {
         fontSize: '48px',
         fill: '#00ff00'
     }).setOrigin(0.5);
-    scene.add.text(400, 360, 'Press Esc to return to main menu', {
+    const menuText = scene.add.text(centerX, centerY + 60, 'Press Esc to return to main menu', {
         fontSize: '24px',
         fill: '#00ff00'
     }).setOrigin(0.5);
+    // Keep text fixed on screen
+    completeText.setScrollFactor(0);
+    menuText.setScrollFactor(0);
+    // Reposition to screen center since scroll factor is 0
+    completeText.setPosition(config.width / 2, config.height / 2);
+    menuText.setPosition(config.width / 2, config.height / 2 + 60);
     scene.physics.pause();
 }
 
