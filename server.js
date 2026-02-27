@@ -41,6 +41,22 @@ app.post("/api/parse-level", upload.single("level"), (req, res) => {
   }
 });
 
+/**
+ * GET /api/load-sample-level
+ * Returns parsed JSON for the sample level (test-level.txt)
+ */
+app.get("/api/load-sample-level", (req, res) => {
+  try {
+    const fs = require("fs");
+    const sampleLevelPath = path.join(__dirname, "public", "test-level.txt");
+    const text = fs.readFileSync(sampleLevelPath, "utf-8");
+    const parsed = parseLevelText(text);
+    return res.json(parsed);
+  } catch (err) {
+    return res.status(400).json({ error: err.message || "Failed to load sample level." });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

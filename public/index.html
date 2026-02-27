@@ -15,8 +15,8 @@
             
             <nav class="main-menu">
                 <ul>
-                    <li><a class="menu-btn">Levels</a></li>
-                    <li><a class="menu-btn" id="uploadMenuBtn">Upload Level</a></li>
+                    <li><a class="menu-btn" id="playSampleBtn">Play Sample Level</a></li>
+                    <li><a class="menu-btn" id="uploadMenuBtn">Upload Your Own Level</a></li>
                     <li><button id="about-btn" class="menu-btn">About</button></li>
                     <li><a class="menu-btn" href="https://github.com/gilbertboys/Textplorer" target="_blank">Source Code</a></li>
                 </ul>
@@ -25,7 +25,7 @@
             <!-- Upload Panel (hidden until user clicks "Upload Level") -->
             <div id="uploadPanel" class="upload-panel">
                 <input id="levelFile" type="file" accept=".txt" />
-                <button id="uploadBtn" class="menu-btn">Parse Level</button>
+                <button id="uploadBtn" class="menu-btn">Upload & Play</button>
 
                 <p id="status" class="upload-status"></p>
 
@@ -48,14 +48,16 @@
             <p>Upload a .txt file from your computer to be able to jump around inside it.</p>
             <h3>GAME RULES:</h3>
             <ul>
+                <li>You are a blue square</li>
                 <li>Use WASD to move</li>
                 <li>All characters have collision that roughly follows what they look like</li>
             </ul>
             <h3>SPECIAL CHARACTERS:</h3>
             <ul>
-                <li><b>*</b> Is player spawn</li>
-                <li><b>$</b> Is the goal, the area you are trying to reach</li>
+                <li><b>$</b> Is player spawn</li>
+                <li><b>#</b> Is the goal, the area you are trying to reach</li>
                 <li><b>^</b> Is a spike, if you touch it you will restart</li>
+                <li><b>Z</b> Is a spring, if you land on it you will be boosted upwards</li>
             </ul>
             <p class="esc-note">Press Esc to return to main menu</p>
         </div>
@@ -91,8 +93,53 @@
     });
     </script>
 
+    <!-- Game Canvas Container (hidden by default) -->
+    <div id="game-container" style="display: none;"></div>
+
+    <!-- Phaser Framework -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+
+    <!-- JS for game -->
+    <script src="game.js"></script>
+
     <!-- JS for Upload Level UI -->
     <script src="parser-ui.js"></script>
+
+    <!-- JS for Play Sample Level -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const playSampleBtn = document.getElementById('playSampleBtn');
+        const gameContainer = document.getElementById('game-container');
+        const mainHeader = document.querySelector('header.main');
+
+        playSampleBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            try {
+                // Load sample level
+                const response = await fetch('/api/load-sample-level');
+                if (!response.ok) {
+                    alert('Failed to load sample level');
+                    return;
+                }
+
+                const levelData = await response.json();
+
+                // Set level data and show game
+                currentLevelData = levelData;
+                mainHeader.style.display = 'none';
+                gameContainer.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+
+                // Restart game scene with new level data
+                game.scene.stop('default');
+                game.scene.start('default', { levelData: levelData });
+            } catch (err) {
+                alert('Error loading level: ' + err.message);
+                console.error(err);
+            }
+        });
+    });
+    </script>
 
 </body>
 </html>

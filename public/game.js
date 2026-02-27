@@ -1,33 +1,114 @@
 const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 1280,
+    height: 720,
     parent: 'game-container',
     physics: {
         default: 'arcade',
-        arcade: { gravity: { y: 300 } }
+        arcade: { gravity: { y: 300 }, debug: false }
     },
-    scene: { preload, create, update }
+    scene: { key: 'default', preload, create, update }
 };
 
 const game = new Phaser.Game(config);
 let player;
 let cursors;
+let currentLevelData = null;
+let walls;
+let spikes;
+let springs;
+let finish;
+let spawnPoint;
+
+// Returns hitbox dimensions based on character shape
+function getHitboxForSymbol(symbol, cellSize) {
+    const hitboxes = {
+        // Vertical lines - tall and narrow
+        '|': { width: cellSize * 0.2, height: cellSize * 0.9 },
+        // Horizontal lines - wide and short
+        '-': { width: cellSize * 0.8, height: cellSize * 0.2 },
+        '_': { width: cellSize * 0.9, height: cellSize * 0.15 },
+        '=': { width: cellSize * 0.8, height: cellSize * 0.5 },
+        // Square-ish characters
+        '#': { width: cellSize * 0.85, height: cellSize * 0.85 },
+        '@': { width: cellSize * 0.8, height: cellSize * 0.85 },
+        'O': { width: cellSize * 0.75, height: cellSize * 0.85 },
+        '0': { width: cellSize * 0.7, height: cellSize * 0.85 },
+        // Brackets and parens - narrow
+        '[': { width: cellSize * 0.4, height: cellSize * 0.85 },
+        ']': { width: cellSize * 0.4, height: cellSize * 0.85 },
+        '(': { width: cellSize * 0.45, height: cellSize * 0.85 },
+        ')': { width: cellSize * 0.45, height: cellSize * 0.85 },
+        '{': { width: cellSize * 0.45, height: cellSize * 0.85 },
+        '}': { width: cellSize * 0.45, height: cellSize * 0.85 },
+        // Pointed characters - spike-like
+        '^': { width: cellSize * 0.7, height: cellSize * 0.6 },
+        'v': { width: cellSize * 0.7, height: cellSize * 0.6 },
+        'V': { width: cellSize * 0.8, height: cellSize * 0.7 },
+        '<': { width: cellSize * 0.6, height: cellSize * 0.7 },
+        '>': { width: cellSize * 0.6, height: cellSize * 0.7 },
+        // Diagonal lines - smaller centered box
+        '/': { width: cellSize * 0.3, height: cellSize * 0.8 },
+        '\\': { width: cellSize * 0.3, height: cellSize * 0.8 },
+        // Small punctuation
+        '.': { width: cellSize * 0.2, height: cellSize * 0.2 },
+        ',': { width: cellSize * 0.2, height: cellSize * 0.3 },
+        ':': { width: cellSize * 0.2, height: cellSize * 0.5 },
+        ';': { width: cellSize * 0.2, height: cellSize * 0.6 },
+        "'": { width: cellSize * 0.15, height: cellSize * 0.3 },
+        '"': { width: cellSize * 0.35, height: cellSize * 0.3 },
+        '`': { width: cellSize * 0.2, height: cellSize * 0.25 },
+        // Medium width characters
+        '+': { width: cellSize * 0.6, height: cellSize * 0.6 },
+        '*': { width: cellSize * 0.6, height: cellSize * 0.6 },
+        'x': { width: cellSize * 0.65, height: cellSize * 0.6 },
+        'X': { width: cellSize * 0.75, height: cellSize * 0.8 },
+        '~': { width: cellSize * 0.8, height: cellSize * 0.3 },
+        // Letters - approximate based on typical shapes
+        'Z': { width: cellSize * 0.7, height: cellSize * 0.8 },
+        'W': { width: cellSize * 0.9, height: cellSize * 0.8 },
+        'M': { width: cellSize * 0.85, height: cellSize * 0.8 },
+        'I': { width: cellSize * 0.3, height: cellSize * 0.8 },
+        'l': { width: cellSize * 0.2, height: cellSize * 0.8 },
+        'i': { width: cellSize * 0.2, height: cellSize * 0.75 },
+        '!': { width: cellSize * 0.2, height: cellSize * 0.8 },
+    };
+    return hitboxes[symbol] || { width: cellSize * 0.8, height: cellSize * 0.8 };
+}
 
 function preload() {
     this.load.image('playerFigure', 'stickman.png')
 }
 
-function create() {
-    this.add.text(400, 100, 'TEXTPLORER: WASD to move', { 
-        fontSize: '32px', 
-        fill: '#fff' 
-    }).setOrigin(0.5);
+function create(data) {
+    // Clear all existing game objects
+    this.children.removeAll();
 
-    player = this.physics.add.sprite(400, 300, 'playerFigure');
-    player.setScale(0.5);
-    player.setCollideWorldBounds(true);
-    
+    // Initialize groups for physics interactions
+    walls = this.physics.add.staticGroup();
+    spikes = this.physics.add.group({ allowGravity: false, immovable: true });
+    springs = this.physics.add.group({ allowGravity: false, immovable: true });
+
+    // If we have level data (passed via launch or global), render it
+    const levelData = data?.levelData || currentLevelData;
+
+    if (levelData) {
+        renderLevel.call(this, levelData);
+    } else {
+        this.add.text(640, 100, 'TEXTPLORER: WASD to move', {
+            fontSize: '32px',
+            fill: '#fff'
+        }).setOrigin(0.5);
+
+        player = this.physics.add.sprite(640, 360, 'playerFigure');
+        player.setScale(0.5);
+        player.setCollideWorldBounds(true);
+
+        const logo = this.add.rectangle(640, 360, 50, 50, 0x00ff00);
+        this.physics.add.existing(logo);
+        logo.body.setBounce(0.8).setCollideWorldBounds(true);
+    }
+
     cursors = this.input.keyboard.addKeys({
         up: Phaser.Input.Keyboard.KeyCodes.W,
         down: Phaser.Input.Keyboard.KeyCodes.S,
@@ -35,12 +116,189 @@ function create() {
         right: Phaser.Input.Keyboard.KeyCodes.D
     });
 
-    const logo = this.add.rectangle(400, 300, 50, 50, 0x00ff00);
-    this.physics.add.existing(logo);
-    logo.body.setBounce(0.8).setCollideWorldBounds(true);
+    // ESC to return to menu
+    this.input.keyboard.on('keydown-ESC', returnToMenu);
+}
+
+function renderLevel(levelData) {
+    const scene = game.scene.scenes[0];
+    const cellSize = 40; // pixels per character
+
+    // Calculate level dimensions based on all elements
+    const allElements = [
+        ...levelData.walls,
+        ...levelData.spikes,
+        ...levelData.springs,
+        levelData.spawn,
+        levelData.finish
+    ];
+    const maxX = Math.max(...allElements.map(e => e.x)) + 1;
+    const maxY = Math.max(...allElements.map(e => e.y)) + 1;
+    const levelWidth = Math.max(maxX * cellSize, config.width);
+    const levelHeight = Math.max(maxY * cellSize, config.height);
+
+    // Set world bounds to match level size
+    scene.physics.world.setBounds(0, 0, levelWidth, levelHeight);
+
+    // Create walls - add to static group for proper collision
+    levelData.walls.forEach(wall => {
+        const x = wall.x * cellSize + cellSize / 2;
+        const y = wall.y * cellSize + cellSize / 2;
+        const symbol = wall.symbol || '#';
+        // Render the actual character as white text
+        const wallText = scene.add.text(x, y, symbol, {
+            fontSize: `${cellSize}px`,
+            fill: '#ffffff',
+            fontFamily: 'monospace'
+        }).setOrigin(0.5);
+        scene.physics.add.existing(wallText, true); // true = static body
+        const hitbox = getHitboxForSymbol(symbol, cellSize);
+        wallText.body.setSize(hitbox.width, hitbox.height);
+        walls.add(wallText);
+    });
+
+    // Create spikes
+    levelData.spikes.forEach(spike => {
+        const x = spike.x * cellSize + cellSize / 2;
+        const y = spike.y * cellSize + cellSize / 2;
+        const symbol = spike.symbol || '^';
+        const spikeText = scene.add.text(x, y, symbol, {
+            fontSize: `${cellSize}px`,
+            fill: '#ff0000',
+            fontFamily: 'monospace'
+        }).setOrigin(0.5);
+        scene.physics.add.existing(spikeText);
+        spikeText.body.setAllowGravity(false);
+        spikeText.body.setImmovable(true);
+        const hitbox = getHitboxForSymbol(symbol, cellSize);
+        spikeText.body.setSize(hitbox.width, hitbox.height);
+        spikes.add(spikeText);
+        spikeText.isDangerous = true;
+    });
+
+    // Create springs 
+    levelData.springs.forEach(spring => {
+        const x = spring.x * cellSize + cellSize / 2;
+        const y = spring.y * cellSize + cellSize / 2;
+        const symbol = spring.symbol || 'Z';
+        const springText = scene.add.text(x, y, symbol, {
+            fontSize: `${cellSize}px`,
+            fill: '#ffff00',
+            fontFamily: 'monospace'
+        }).setOrigin(0.5);
+        scene.physics.add.existing(springText);
+        springText.body.setAllowGravity(false);
+        springText.body.setImmovable(true);
+        const hitbox = getHitboxForSymbol(symbol, cellSize);
+        springText.body.setSize(hitbox.width, hitbox.height);
+        springs.add(springText);
+        springText.isSpring = true;
+    });
+
+    // Create finish point - disable gravity, make immovable
+    const finishX = levelData.finish.x * cellSize + cellSize / 2;
+    const finishY = levelData.finish.y * cellSize + cellSize / 2;
+    const finishSymbol = levelData.finish.symbol || '#';
+    finish = scene.add.text(finishX, finishY, finishSymbol, {
+        fontSize: `${cellSize}px`,
+        fill: '#00ff00',
+        fontFamily: 'monospace'
+    }).setOrigin(0.5);
+    scene.physics.add.existing(finish);
+    finish.body.setAllowGravity(false);
+    finish.body.setImmovable(true);
+    const finishHitbox = getHitboxForSymbol(finishSymbol, cellSize);
+    finish.body.setSize(finishHitbox.width, finishHitbox.height);
+    finish.isFinish = true;
+
+    // Create player at spawn
+    spawnPoint = { x: levelData.spawn.x * cellSize + cellSize / 2, y: levelData.spawn.y * cellSize + cellSize / 2 };
+
+    // Check if texture exists, if not create placeholder
+    if (scene.textures.exists('playerFigure')) {
+        player = scene.physics.add.sprite(spawnPoint.x, spawnPoint.y, 'playerFigure');
+        player.setScale(0.5);
+    } else {
+        // Fallback if image doesn't load - create a cyan rectangle
+        player = scene.add.rectangle(spawnPoint.x, spawnPoint.y, 30, 40, 0x00ffff);
+        scene.physics.add.existing(player);
+    }
+
+    player.setCollideWorldBounds(true);
+    player.setBodySize(30, 40);
+
+    // Set up camera to follow player
+    scene.cameras.main.setBounds(0, 0, levelWidth, levelHeight);
+    scene.cameras.main.startFollow(player, true, 0.1, 0.1);
+
+    // Set up collisions
+    scene.physics.add.collider(player, walls);
+    scene.physics.add.collider(spikes, walls);
+    scene.physics.add.collider(springs, walls);
+    scene.physics.add.overlap(player, spikes, handleSpikeCollision);
+    scene.physics.add.overlap(player, springs, handleSpringCollision);
+    scene.physics.add.overlap(player, finish, handleFinishCollision);
+
+    // Store reference to level data for restart functionality
+    player.spawnPoint = spawnPoint;
+}
+
+function handleSpikeCollision(player, spike) {
+    // Reset player to spawn point
+    player.x = player.spawnPoint.x;
+    player.y = player.spawnPoint.y;
+    player.setVelocity(0, 0);
+}
+
+function handleSpringCollision(player, spring) {
+    // Boost player upward
+    player.setVelocityY(-500);
+}
+
+function handleFinishCollision(player, finish) {
+    // Level complete!
+    const scene = game.scene.scenes[0];
+    const centerX = scene.cameras.main.scrollX + config.width / 2;
+    const centerY = scene.cameras.main.scrollY + config.height / 2;
+    const completeText = scene.add.text(centerX, centerY, 'LEVEL COMPLETE!', {
+        fontSize: '48px',
+        fill: '#00ff00'
+    }).setOrigin(0.5);
+    const menuText = scene.add.text(centerX, centerY + 60, 'Press Esc to return to main menu', {
+        fontSize: '24px',
+        fill: '#00ff00'
+    }).setOrigin(0.5);
+    // Keep text fixed on screen
+    completeText.setScrollFactor(0);
+    menuText.setScrollFactor(0);
+    // Reposition to screen center since scroll factor is 0
+    completeText.setPosition(config.width / 2, config.height / 2);
+    menuText.setPosition(config.width / 2, config.height / 2 + 60);
+    scene.physics.pause();
+}
+
+function returnToMenu() {
+    // Hide game, show menu
+    const gameContainer = document.getElementById('game-container');
+    const mainHeader = document.querySelector('header.main');
+
+    if (gameContainer) gameContainer.style.display = 'none';
+    if (mainHeader) {
+        mainHeader.style.display = 'flex';
+        mainHeader.style.flexDirection = 'column';
+        mainHeader.style.justifyContent = 'center';
+        mainHeader.style.alignItems = 'center';
+    }
+    document.body.style.overflow = 'hidden';
+
+    // Restart the scene to clean up
+    game.scene.stop();
+    game.scene.start();
 }
 
 function update() {
+    if (!player) return;
+
     const speed = 200;
 
     if (cursors.left.isDown) {
