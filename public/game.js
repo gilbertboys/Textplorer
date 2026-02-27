@@ -20,6 +20,62 @@ let springs;
 let finish;
 let spawnPoint;
 
+// Returns hitbox dimensions based on character shape
+function getHitboxForSymbol(symbol, cellSize) {
+    const hitboxes = {
+        // Vertical lines - tall and narrow
+        '|': { width: cellSize * 0.2, height: cellSize * 0.9 },
+        // Horizontal lines - wide and short
+        '-': { width: cellSize * 0.8, height: cellSize * 0.2 },
+        '_': { width: cellSize * 0.9, height: cellSize * 0.15 },
+        '=': { width: cellSize * 0.8, height: cellSize * 0.5 },
+        // Square-ish characters
+        '#': { width: cellSize * 0.85, height: cellSize * 0.85 },
+        '@': { width: cellSize * 0.8, height: cellSize * 0.85 },
+        'O': { width: cellSize * 0.75, height: cellSize * 0.85 },
+        '0': { width: cellSize * 0.7, height: cellSize * 0.85 },
+        // Brackets and parens - narrow
+        '[': { width: cellSize * 0.4, height: cellSize * 0.85 },
+        ']': { width: cellSize * 0.4, height: cellSize * 0.85 },
+        '(': { width: cellSize * 0.45, height: cellSize * 0.85 },
+        ')': { width: cellSize * 0.45, height: cellSize * 0.85 },
+        '{': { width: cellSize * 0.45, height: cellSize * 0.85 },
+        '}': { width: cellSize * 0.45, height: cellSize * 0.85 },
+        // Pointed characters - spike-like
+        '^': { width: cellSize * 0.7, height: cellSize * 0.6 },
+        'v': { width: cellSize * 0.7, height: cellSize * 0.6 },
+        'V': { width: cellSize * 0.8, height: cellSize * 0.7 },
+        '<': { width: cellSize * 0.6, height: cellSize * 0.7 },
+        '>': { width: cellSize * 0.6, height: cellSize * 0.7 },
+        // Diagonal lines - smaller centered box
+        '/': { width: cellSize * 0.3, height: cellSize * 0.8 },
+        '\\': { width: cellSize * 0.3, height: cellSize * 0.8 },
+        // Small punctuation
+        '.': { width: cellSize * 0.2, height: cellSize * 0.2 },
+        ',': { width: cellSize * 0.2, height: cellSize * 0.3 },
+        ':': { width: cellSize * 0.2, height: cellSize * 0.5 },
+        ';': { width: cellSize * 0.2, height: cellSize * 0.6 },
+        "'": { width: cellSize * 0.15, height: cellSize * 0.3 },
+        '"': { width: cellSize * 0.35, height: cellSize * 0.3 },
+        '`': { width: cellSize * 0.2, height: cellSize * 0.25 },
+        // Medium width characters
+        '+': { width: cellSize * 0.6, height: cellSize * 0.6 },
+        '*': { width: cellSize * 0.6, height: cellSize * 0.6 },
+        'x': { width: cellSize * 0.65, height: cellSize * 0.6 },
+        'X': { width: cellSize * 0.75, height: cellSize * 0.8 },
+        '~': { width: cellSize * 0.8, height: cellSize * 0.3 },
+        // Letters - approximate based on typical shapes
+        'Z': { width: cellSize * 0.7, height: cellSize * 0.8 },
+        'W': { width: cellSize * 0.9, height: cellSize * 0.8 },
+        'M': { width: cellSize * 0.85, height: cellSize * 0.8 },
+        'I': { width: cellSize * 0.3, height: cellSize * 0.8 },
+        'l': { width: cellSize * 0.2, height: cellSize * 0.8 },
+        'i': { width: cellSize * 0.2, height: cellSize * 0.75 },
+        '!': { width: cellSize * 0.2, height: cellSize * 0.8 },
+    };
+    return hitboxes[symbol] || { width: cellSize * 0.8, height: cellSize * 0.8 };
+}
+
 function preload() {
     this.load.image('playerFigure', 'stickman.png')
 }
@@ -88,14 +144,16 @@ function renderLevel(levelData) {
     levelData.walls.forEach(wall => {
         const x = wall.x * cellSize + cellSize / 2;
         const y = wall.y * cellSize + cellSize / 2;
+        const symbol = wall.symbol || '#';
         // Render the actual character as white text
-        const wallText = scene.add.text(x, y, wall.symbol || '#', {
+        const wallText = scene.add.text(x, y, symbol, {
             fontSize: `${cellSize}px`,
             fill: '#ffffff',
             fontFamily: 'monospace'
         }).setOrigin(0.5);
         scene.physics.add.existing(wallText, true); // true = static body
-        wallText.body.setSize(cellSize, cellSize);
+        const hitbox = getHitboxForSymbol(symbol, cellSize);
+        wallText.body.setSize(hitbox.width, hitbox.height);
         walls.add(wallText);
     });
 
@@ -103,7 +161,8 @@ function renderLevel(levelData) {
     levelData.spikes.forEach(spike => {
         const x = spike.x * cellSize + cellSize / 2;
         const y = spike.y * cellSize + cellSize / 2;
-        const spikeText = scene.add.text(x, y, '^', {
+        const symbol = spike.symbol || '^';
+        const spikeText = scene.add.text(x, y, symbol, {
             fontSize: `${cellSize}px`,
             fill: '#ff0000',
             fontFamily: 'monospace'
@@ -111,7 +170,8 @@ function renderLevel(levelData) {
         scene.physics.add.existing(spikeText);
         spikeText.body.setAllowGravity(false);
         spikeText.body.setImmovable(true);
-        spikeText.body.setSize(cellSize, cellSize);
+        const hitbox = getHitboxForSymbol(symbol, cellSize);
+        spikeText.body.setSize(hitbox.width, hitbox.height);
         spikes.add(spikeText);
         spikeText.isDangerous = true;
     });
@@ -120,7 +180,8 @@ function renderLevel(levelData) {
     levelData.springs.forEach(spring => {
         const x = spring.x * cellSize + cellSize / 2;
         const y = spring.y * cellSize + cellSize / 2;
-        const springText = scene.add.text(x, y, 'Z', {
+        const symbol = spring.symbol || 'Z';
+        const springText = scene.add.text(x, y, symbol, {
             fontSize: `${cellSize}px`,
             fill: '#ffff00',
             fontFamily: 'monospace'
@@ -128,7 +189,8 @@ function renderLevel(levelData) {
         scene.physics.add.existing(springText);
         springText.body.setAllowGravity(false);
         springText.body.setImmovable(true);
-        springText.body.setSize(cellSize, cellSize);
+        const hitbox = getHitboxForSymbol(symbol, cellSize);
+        springText.body.setSize(hitbox.width, hitbox.height);
         springs.add(springText);
         springText.isSpring = true;
     });
@@ -136,7 +198,8 @@ function renderLevel(levelData) {
     // Create finish point - disable gravity, make immovable
     const finishX = levelData.finish.x * cellSize + cellSize / 2;
     const finishY = levelData.finish.y * cellSize + cellSize / 2;
-    finish = scene.add.text(finishX, finishY, '#', {
+    const finishSymbol = levelData.finish.symbol || '#';
+    finish = scene.add.text(finishX, finishY, finishSymbol, {
         fontSize: `${cellSize}px`,
         fill: '#00ff00',
         fontFamily: 'monospace'
@@ -144,7 +207,8 @@ function renderLevel(levelData) {
     scene.physics.add.existing(finish);
     finish.body.setAllowGravity(false);
     finish.body.setImmovable(true);
-    finish.body.setSize(cellSize, cellSize);
+    const finishHitbox = getHitboxForSymbol(finishSymbol, cellSize);
+    finish.body.setSize(finishHitbox.width, finishHitbox.height);
     finish.isFinish = true;
 
     // Create player at spawn
