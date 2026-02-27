@@ -19,6 +19,7 @@ let spikes;
 let springs;
 let finish;
 let spawnPoint;
+let monstersGroup;
 
 // Returns hitbox dimensions based on character shape
 function getHitboxForSymbol(symbol, cellSize) {
@@ -88,6 +89,7 @@ function create(data) {
     walls = this.physics.add.staticGroup();
     spikes = this.physics.add.group({ allowGravity: false, immovable: true });
     springs = this.physics.add.group({ allowGravity: false, immovable: true });
+    monstersGroup = this.physics.add.group({ allowGravity: false });
 
     // If we have level data (passed via launch or global), render it
     const levelData = data?.levelData || currentLevelData;
@@ -195,6 +197,26 @@ function renderLevel(levelData) {
         springText.isSpring = true;
     });
 
+    // Create monsters - patrol 2 cells left/right from spawn point
+    levelData.monsters.forEach(monster => {
+        const x = monster.x * cellSize + cellSize / 2;
+        const y = monster.y * cellSize + cellSize / 2;
+        const monsterText = scene.add.text(x, y, 'M', {
+            fontSize: `${cellSize}px`,
+            fill: '#ff0000',
+            fontFamily: 'monospace'
+        }).setOrigin(0.5);
+        scene.physics.add.existing(monsterText);
+        monsterText.body.setAllowGravity(false);
+        monsterText.body.setImmovable(false);
+        const hitbox = getHitboxForSymbol('M', cellSize);
+        monsterText.body.setSize(hitbox.width, hitbox.height);
+        monsterText.patrolLeft = x;
+        monsterText.patrolRight = x + 2 * cellSize;
+        monsterText.body.setVelocityX(100);
+        monstersGroup.add(monsterText);
+    });
+
     // Create finish point - disable gravity, make immovable
     const finishX = levelData.finish.x * cellSize + cellSize / 2;
     const finishY = levelData.finish.y * cellSize + cellSize / 2;
@@ -238,6 +260,7 @@ function renderLevel(levelData) {
     scene.physics.add.overlap(player, spikes, handleSpikeCollision);
     scene.physics.add.overlap(player, springs, handleSpringCollision);
     scene.physics.add.overlap(player, finish, handleFinishCollision);
+    scene.physics.add.overlap(player, monstersGroup, handleMonsterCollision);
 
     // Store reference to level data for restart functionality
     player.spawnPoint = spawnPoint;
@@ -245,6 +268,12 @@ function renderLevel(levelData) {
 
 function handleSpikeCollision(player, spike) {
     // Reset player to spawn point
+    player.x = player.spawnPoint.x;
+    player.y = player.spawnPoint.y;
+    player.setVelocity(0, 0);
+}
+
+function handleMonsterCollision(player, monster) {
     player.x = player.spawnPoint.x;
     player.y = player.spawnPoint.y;
     player.setVelocity(0, 0);
@@ -311,5 +340,15 @@ function update() {
 
     if (cursors.up.isDown && player.body.blocked.down) {
         player.body.setVelocityY(-250);
+    }
+
+    if (monstersGroup) {
+        monstersGroup.getChildren().forEach(monster => {
+            if (monster.x >= monster.patrolRight) {
+                monster.body.setVelocityX(-100);
+            } else if (monster.x <= monster.patrolLeft) {
+                monster.body.setVelocityX(100);
+            }
+        });
     }
 }
