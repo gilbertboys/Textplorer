@@ -1,6 +1,8 @@
 let timerText;
 let timerStart;
 let timerRunning = false;
+let currentLevelKey = null;
+
 
 const config = {
     type: Phaser.AUTO,
@@ -375,28 +377,90 @@ function handleSpringCollision(player, spring) {
 }
 
 function handleFinishCollision(player, finish) {
-    // Level complete!
-    const scene = game.scene.scenes[0];
-    const centerX = scene.cameras.main.scrollX + config.width / 2;
-    const centerY = scene.cameras.main.scrollY + config.height / 2;
-    const completeText = scene.add.text(centerX, centerY, 'LEVEL COMPLETE!', {
-        fontSize: '48px',
-        fill: '#00ff00'
-    }).setOrigin(0.5);
-    const menuText = scene.add.text(centerX, centerY + 60, 'Press Esc to return to main menu', {
-        fontSize: '24px',
-        fill: '#00ff00'
-    }).setOrigin(0.5);
-    // Keep text fixed on screen
-    completeText.setScrollFactor(0);
-    menuText.setScrollFactor(0);
-    // Reposition to screen center since scroll factor is 0
-    completeText.setPosition(game.scale.width / 2, game.scale.height / 2);
-    menuText.setPosition(game.scale.width / 2, game.scale.height / 2 + 60);
     timerRunning = false;
-    const elapsed = ((Date.now() - timerStart) / 1000).toFixed(3);
-    timerText.setText('Time: ' + elapsed + 's');
+    const finalTime = ((Date.now() - timerStart) / 1000).toFixed(3);
+
+    const scene = game.scene.scenes[0];
     scene.physics.pause();
+
+    // Dim overlay
+    const overlay = scene.add.rectangle(
+        game.scale.width / 2, game.scale.height / 2,
+        game.scale.width, game.scale.height,
+        0x000000, 0.7
+    ).setScrollFactor(0).setDepth(1000);
+
+    // Level complete text
+    scene.add.text(game.scale.width / 2, game.scale.height / 2 - 160, 'LEVEL COMPLETE!', {
+        fontSize: '48px', fill: '#00ff00', fontFamily: 'monospace'
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(1001);
+
+    // Their time
+    scene.add.text(game.scale.width / 2, game.scale.height / 2 - 100, 'Your time: ' + finalTime + 's', {
+        fontSize: '28px', fill: '#ffffff', fontFamily: 'monospace'
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(1001);
+
+    // Top 3 leaderboard
+    const levelKey = currentLevelKey || 'unknown';
+    fetch('/api/get-scores?level=' + levelKey)
+        .then(r => r.json())
+        .then(scores => {
+            scene.add.text(game.scale.width / 2, game.scale.height / 2 - 50, 'TOP TIMES', {
+                fontSize: '20px', fill: '#ffc75f', fontFamily: 'monospace'
+            }).setOrigin(0.5).setScrollFactor(0).setDepth(1001);
+
+            const top3 = scores.slice(0, 3);
+            top3.forEach((s, i) => {
+                scene.add.text(game.scale.width / 2, game.scale.height / 2 - 20 + (i * 30),
+                    (i + 1) + '.  ' + s.name + '  ' + s.time.toFixed(3) + 's', {
+                    fontSize: '18px', fill: '#ffffff', fontFamily: 'monospace'
+                }).setOrigin(0.5).setScrollFactor(0).setDepth(1001);
+            });
+        });
+
+    // Name input and submit using DOM
+    const submitDiv = document.createElement('div');
+    submitDiv.id = 'score-submit';
+    submitDiv.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, 40px);
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        z-index: 9999;
+        font-family: 'Courier New', monospace;
+    `;
+    submitDiv.innerHTML = `
+        <input id="playerName" maxlength="20" placeholder="Enter name..."
+            style="background:#111; color:#fff; border:1px solid #9cb4f1;
+                   padding:8px 12px; font-family:'Courier New',monospace;
+                   font-size:16px; width:180px;" />
+        <button id="submitScoreBtn"
+            style="background:none; color:#975439; border:1px solid #9cb4f1;
+                   padding:8px 16px; font-family:'Courier New',monospace;
+                   font-size:16px; cursor:pointer;">
+            Submit
+        </button>
+    `;
+    document.body.appendChild(submitDiv);
+
+    document.getElementById('submitScoreBtn').addEventListener('click', async () => {
+        const name = document.getElementById('playerName').value.trim();
+        if (!name) return;
+        await fetch('/api/submit-score', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ level: levelKey, name, time: parseFloat(finalTime) })
+        });
+        submitDiv.remove();
+    });
+
+    // Esc to menu
+    scene.add.text(game.scale.width / 2, game.scale.height / 2 + 140, 'Press Esc to return to menu', {
+        fontSize: '20px', fill: '#666', fontFamily: 'monospace'
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(1001);
 }
 
 function returnToMenu() {
@@ -413,6 +477,8 @@ function returnToMenu() {
     }
     document.body.style.overflow = 'hidden';
 
+    const submitDiv = document.getElementById('score-submit');
+    if (submitDiv) submitDiv.remove();
     // Restart the scene to clean up
     game.scene.stop();
     game.scene.start();

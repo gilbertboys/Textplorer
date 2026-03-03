@@ -69,6 +69,44 @@ app.get("/api/load-sample-level", (req, res) => {
   }
 });
 
+const fs = require("fs");
+
+// GET /api/get-scores?level=easy
+app.get("/api/get-scores", (req, res) => {
+  try {
+    const scoresPath = path.join(__dirname, "scores.json");
+    if (!fs.existsSync(scoresPath)) return res.json([]);
+    const scores = JSON.parse(fs.readFileSync(scoresPath, "utf-8"));
+    const level = req.query.level;
+    const filtered = scores
+      .filter(s => s.level === level)
+      .sort((a, b) => a.time - b.time)
+      .slice(0, 10);
+    return res.json(filtered);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to get scores." });
+  }
+});
+
+// POST /api/submit-score
+app.use(express.json());
+app.post("/api/submit-score", (req, res) => {
+  try {
+    const { level, name, time } = req.body;
+    if (!level || !name || !time) return res.status(400).json({ error: "Missing fields." });
+    const scoresPath = path.join(__dirname, "scores.json");
+    let scores = [];
+    if (fs.existsSync(scoresPath)) {
+      scores = JSON.parse(fs.readFileSync(scoresPath, "utf-8"));
+    }
+    scores.push({ level, name: name.slice(0, 20), time: parseFloat(time) });
+    fs.writeFileSync(scoresPath, JSON.stringify(scores, null, 2));
+    return res.json({ success: true });
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to save score." });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
