@@ -16,6 +16,13 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.main-content {
+    background: #111;
+    padding: 2em 3em;
 }
 
 .main-title {
@@ -90,7 +97,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: #111;
+    background: transparent;
     color: #fff;
     z-index: 1000;        /* higher than header/footer */
     overflow: auto;
@@ -98,10 +105,11 @@ body {
     box-sizing: border-box;
 }
 
-/* Optional: remove max-width so it stretches fully */
 #about-screen .description-section-content {
-    max-width: 800px;   /* can wrap content for readability */
+    max-width: 800px;
     margin: 0 auto;
+    background: #111;
+    padding: 2em 3em;
 }
 
 
