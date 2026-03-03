@@ -1,5 +1,5 @@
                         |
-     I%POSSIBLE LEVEL   |
+     IMPOSSIBLE LEVEL   |
 THIS IS     ^           LLLLLLL^^^^^^^^ ^^^^^^^^^^^^^^^^
 $       %   ^^^^              |
 PPPP PPPPPP^^^  ^PP^^P^P^P^P  |       OUT HERE!

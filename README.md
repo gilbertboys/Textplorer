@@ -36,5 +36,18 @@ The goal of our project is to provide a game that doesn’t rely on a steep lear
 - Maintain clean, modular code
 - Create a unique and fun playing experience for users
 
+## Textplorer Features
+
+- **Upload Your Own Level** - Upload any .txt file and play it as a platformer level
+- **Sample Levels** - Five levels ranging from Easy to Impossible
+- **Leaderboards** - Top 10 times tracked per sample level, viewable on a leaderboard page
+- **Timer** - Tracks your completion time in seconds and milliseconds
+- **Submit Your Score** - Enter your name and submit your best time after finishing a level
+- **Monsters** - Patrolling enemies that reset you to spawn on contact
+- **Spikes** - Hazard characters that restart the level on touch
+- **Springs** - Bounce pads that launch the player upward
+- **Variable Jump Height** - Hold W longer to jump higher
+- **Camera Follow** - Camera tracks the player across large levels
+
 ## Repository Layout
 Our respository will be divided up into many sub-parts of our project. This will include <u>documents<u> we design for the program planning, the <u>software<u> of the program which will also be split up into smaller parts based on our game features, and the <u>user interface<u> which will design how our project will be delivered to players and info on the visual aspects of the game. As we move forward with the project, the layout of the repository will improve based on how we want our organization to change and what new decisions are being made.
