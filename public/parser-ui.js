@@ -92,6 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Restart game scene with uploaded level data
       game.scene.stop("default");
       game.scene.start("default", { levelData: data });
+      currentLevelKey = null;
 
     } catch (err) {
       status.textContent = "Request failed ❌";
