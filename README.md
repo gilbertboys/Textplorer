@@ -5,10 +5,10 @@ This is the respository for our CS 362 project
 Visit https://textplorer-cs362-85c336ddf2eb.herokuapp.com/ to run and play our game!
 
 ## OPERATIONAL USE CASES
--Users can visit the website without needing to build/download anything themselves
--Users can navigate our web game's menus
--Users can play sample level with functional physics and objectives
--Users can create and upload their own levels with functional .txt parsing and level rendering
+- Users can visit the website without needing to build/download anything themselves
+- Users can navigate our web game's menus
+- Users can play sample level with functional physics and objectives
+- Users can create and upload their own levels with functional .txt parsing and level rendering
 
 ## Team Members
 - Norman Nomie
