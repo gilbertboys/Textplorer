@@ -230,6 +230,25 @@ function renderLevel(levelData) {
         monsterText.patrolRight = x + 2 * cellSize;
         monsterText.body.setVelocityX(100);
         monstersGroup.add(monsterText);
+        scene.tweens.addCounter({
+            from: 0,
+            to: 5,
+            duration: 600,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+            onUpdate: function(tween) {
+                monsterText.setShadow(0, 0, '#ff0000', tween.getValue(), true, true);
+            }
+        });
+        scene.tweens.add({
+            targets: monsterText,
+            alpha: { from: 0.75, to: 1 },
+            duration: 600,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+        });
     });
 
     // Create finish point - disable gravity, make immovable
