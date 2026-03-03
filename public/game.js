@@ -20,6 +20,8 @@ let springs;
 let finish;
 let spawnPoint;
 let monstersGroup;
+let jumpTime = 0;
+const maxJumpTime = 200; // milliseconds player can hold for higher jump
 
 // Returns hitbox dimensions based on character shape
 function getHitboxForSymbol(symbol, cellSize) {
@@ -338,8 +340,26 @@ function update() {
         player.body.setVelocityX(0);
     }
 
-    if (cursors.up.isDown && player.body.blocked.down) {
-        player.body.setVelocityY(-250);
+    // Variable jump height - hold W longer for higher jumps
+    if (player.body.blocked.down) {
+        jumpTime = 0;
+    }
+
+    if (cursors.up.isDown) {
+        if (player.body.blocked.down) {
+            // Start jump
+            player.body.setVelocityY(-200);
+            jumpTime = 1;
+        } else if (jumpTime > 0 && jumpTime < maxJumpTime) {
+            // Continue adding upward velocity while holding W
+            player.body.setVelocityY(-200);
+            jumpTime += 16; // approximate frame time
+        }
+    } else {
+        // Key released, stop adding jump force
+        if (jumpTime > 0) {
+            jumpTime = maxJumpTime; // prevent further boosting
+        }
     }
 
     if (monstersGroup) {
