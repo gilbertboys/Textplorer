@@ -1,8 +1,12 @@
 const config = {
     type: Phaser.AUTO,
-    width: 1280,
-    height: 720,
+    width: window.innerWidth,
+    height: window.innerHeight,
     parent: 'game-container',
+    scale: {
+        mode: Phaser.Scale.RESIZE,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+    },
     physics: {
         default: 'arcade',
         arcade: { gravity: { y: 300 }, debug: false }
@@ -303,8 +307,8 @@ function handleFinishCollision(player, finish) {
     completeText.setScrollFactor(0);
     menuText.setScrollFactor(0);
     // Reposition to screen center since scroll factor is 0
-    completeText.setPosition(config.width / 2, config.height / 2);
-    menuText.setPosition(config.width / 2, config.height / 2 + 60);
+    completeText.setPosition(game.scale.width / 2, game.scale.height / 2);
+    menuText.setPosition(game.scale.width / 2, game.scale.height / 2 + 60);
     scene.physics.pause();
 }
 
