@@ -4,22 +4,22 @@ VERY HARD LEVEL - SPILL WORKING ON IP
                                                     ^^P^PPP
                                                |^P^P
                                           PPPPP|
-                                    M          |
+                                    %          |
                               ^^PPP^^      PPPP|
                                     PPPPP      |
-                     M   |                     |
+                     %   |                     |
                     PPPPP|    ^^^         Z    |
-                         |          M     PPPPPP
-         M    ^^^P^^     |    PP^^PP
+                         |          %     PPPPPP
+         %    ^^^P^^     |    PP^^PP
          PPPPP      PPPP |
       P                  |              Z
-             PM     ^^^^ |         PPPPP^^PPP
+             P%     ^^^^ |         PPPPP^^PPP
     PP^^PP    P    PPPPP |
                  P       |    ^^^
   PPPPP    ^^^           |
-              PP^^PP          PPPP    M    PPPP
+              PP^^PP          PPPP    %    PPPP
   ^^^                    PPPPP
-            M       ^^^P  M        PP^^PP
+            %       ^^^P  %        PP^^PP
   PPPPP    PP^^PP        PPPPP
   $
 PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP

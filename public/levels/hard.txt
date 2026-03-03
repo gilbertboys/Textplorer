@@ -3,7 +3,7 @@ HARD LEVEL
 
                                                 #   |
                                                     |
-                                          M         |
+                                          %         |
                               PPPPP   PPPPPPP       |
                                                     |
               Z    ^^^^             PPPPP           |
@@ -14,7 +14,7 @@ HARD LEVEL
     PPPPP   PPPPPPP                    |     
                                      PPPPPPPPPPP
   PPPPPPPPP             ^^
-                  M              
+                  %              
   ^^^^^     PPPPPPPPPPP    PPPP^^PP
                     ^^^^                    
 PPPPP   PPPPPP                              PP^^PP

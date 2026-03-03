@@ -1,19 +1,19 @@
                         |
-     ImPOSSIBLE LEVEL   |
+     I%POSSIBLE LEVEL   |
 THIS IS     ^           LLLLLLL^^^^^^^^ ^^^^^^^^^^^^^^^^
-$       M   ^^^^              |
+$       %   ^^^^              |
 PPPP PPPPPP^^^  ^PP^^P^P^P^P  |       OUT HERE!
 ^^^^^^^^                      |
-            MM                |^^^^^^^^^^ ^^^^^^^^
+            %%                |^^^^^^^^^^ ^^^^^^^^
 ^P PPPPP^^^PPPPPP^^^^PPPPPP^^^
                                  ^^^ ^^   ^^   ^^^|
-MMM  M  M  M                                      |
+%%%  %  %  %                                      |
                                                   |
 PPPP^^^PPP^P^P^^^^P^^P^^^P^^^^P^^^P^^^P^^^^^P     |
                                                   |
  PPPPPPPPPPPPPPPPPPPPPPP9PPPPPPPPPPPPPPPPPPPPPPPPPP|
                                                    |
-IIIIIIIIIIIIIIIIIIIIIIIIIMMMIIIIILLIILILILILILIL   |
+IIIIIIIIIIIIIIIIIIIIIIIII%%%IIIIILLIILILILILILIL   |
                             
         PPP^^^PPP
 PPP^^^ ^^^        ^^^^P^^^^    ^^^^P^^^^^
@@ -23,7 +23,7 @@ PPP^^^ ^^^        ^^^^P^^^^    ^^^^P^^^^^
 ^^^^^P^^^^^       ^^^^^P^^^^^       ^^^^^P^^^^^^
 
 
-M  M  M  M  M  M  M  M  M  M  M  M  M  M  M  M  M  M  M  M  M  M  M
+%  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %  %
 
                #
               PPP
