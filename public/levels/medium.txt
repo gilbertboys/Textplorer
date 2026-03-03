@@ -2,12 +2,12 @@ MEDIUM LEVEL                      |
                                   |
   $                                       LLLLLL
                                   |
-TTTTTTTT     TTTTT     TTTTT      |     Z
-        ^^^^^     ^^^^^^    ^^^^^^ TTTTTTT^^^^TTTTT 
+PPPPPPPP     PPPPP     PPPPP      |     Z
+        ^^^^^     ^^^^^^    ^^^^^^ PPPPPPP^^^^PPPPP 
 
  #              ^^^
 
-TTTT ^^^^ TTTTTT   TTTTTT   TTT TTTTT    TTTT  T T T   TTTTT T T 
+PPPP ^^^^ PPPPPP   PPPPPP   PPP PPPPP    PPPP  P P P   PPPPP P P 
 
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

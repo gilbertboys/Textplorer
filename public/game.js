@@ -1,3 +1,7 @@
+let timerText;
+let timerStart;
+let timerRunning = false;
+
 const config = {
     type: Phaser.AUTO,
     width: window.innerWidth,
@@ -153,11 +157,29 @@ function renderLevel(levelData) {
     // Set world bounds to match level size
     scene.physics.world.setBounds(0, 0, levelWidth, levelHeight);
 
+    // Find positions of rainbow name characters (drew, jacob, jack, norman)
+    const rainbowPositions = new Set();
+    const rainbowNames = ['drew', 'jacob', 'jack', 'norman'];
+    levelData.grid.forEach((row, rowY) => {
+        const lowerRow = row.toLowerCase();
+        rainbowNames.forEach(name => {
+            let idx = lowerRow.indexOf(name);
+            while (idx !== -1) {
+                for (let i = 0; i < name.length; i++) {
+                    rainbowPositions.add(`${idx + i},${rowY}`);
+                }
+                idx = lowerRow.indexOf(name, idx + 1);
+            }
+        });
+    });
+
     // Create walls - add to static group for proper collision
+    const rainbowTexts = [];
     levelData.walls.forEach(wall => {
         const x = wall.x * cellSize + cellSize / 2;
         const y = wall.y * cellSize + cellSize / 2;
         const symbol = wall.symbol || '#';
+        const isRainbow = rainbowPositions.has(`${wall.x},${wall.y}`);
         // Render the actual character as white text
         const wallText = scene.add.text(x, y, symbol, {
             fontSize: `${cellSize}px`,
@@ -167,12 +189,31 @@ function renderLevel(levelData) {
         scene.physics.add.existing(wallText, true); // true = static body
         const hitbox = getHitboxForSymbol(symbol, cellSize);
         wallText.body.setSize(hitbox.width, hitbox.height);
-        if (symbol === 'T') {
-            underscores.add(wallText);
-        } else {
-            walls.add(wallText);
+        walls.add(wallText);
+        if (isRainbow) {
+            rainbowTexts.push({ text: wallText, xOffset: wall.x });
         }
     });
+
+    // Apply cycling rainbow glow to name characters
+    if (rainbowTexts.length > 0) {
+        scene.tweens.addCounter({
+            from: 0,
+            to: 360,
+            duration: 1500,
+            repeat: -1,
+            onUpdate: function(tween) {
+                const baseHue = tween.getValue();
+                rainbowTexts.forEach(({ text, xOffset }) => {
+                    const hue = ((baseHue + xOffset * 20) % 360) / 360;
+                    const color = Phaser.Display.Color.HSLToColor(hue, 1, 0.5);
+                    const hex = '#' + color.color.toString(16).padStart(6, '0');
+                    text.setColor(hex);
+                    text.setShadow(0, 0, hex, 10, true, true);
+                });
+            }
+        });
+    }
 
     // Create spikes
     levelData.spikes.forEach(spike => {
@@ -302,6 +343,17 @@ function renderLevel(levelData) {
 
     // Store reference to level data for restart functionality
     player.spawnPoint = spawnPoint;
+
+    // Start timer
+    timerStart = Date.now();
+    timerRunning = true;
+
+    // Display timer in top-left corner
+    timerText = scene.add.text(16, 16, '0.000s', {
+        fontSize: '24px',
+        fill: '#ffffff',
+        fontFamily: 'monospace'
+    }).setScrollFactor(0).setDepth(999);
 }
 
 function handleSpikeCollision(player, spike) {
@@ -341,6 +393,9 @@ function handleFinishCollision(player, finish) {
     // Reposition to screen center since scroll factor is 0
     completeText.setPosition(game.scale.width / 2, game.scale.height / 2);
     menuText.setPosition(game.scale.width / 2, game.scale.height / 2 + 60);
+    timerRunning = false;
+    const elapsed = ((Date.now() - timerStart) / 1000).toFixed(3);
+    timerText.setText('Time: ' + elapsed + 's');
     scene.physics.pause();
 }
 
@@ -414,5 +469,10 @@ function update() {
                 monster.body.setVelocityX(100);
             }
         });
+    }
+
+    if (timerRunning && timerText) {
+        const elapsed = ((Date.now() - timerStart) / 1000).toFixed(3);
+        timerText.setText(elapsed + 's');
     }
 }
