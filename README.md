@@ -1,6 +1,9 @@
 # Textplorer
 This is the respository for our CS 362 project
 
+## HOW TO BUILD
+Visit https://textplorer-cs362-85c336ddf2eb.herokuapp.com/ to run and play our game!
+
 ## Team Members
 - Norman Nomie
 - Drew Inglesby
