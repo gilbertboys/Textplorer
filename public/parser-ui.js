@@ -16,22 +16,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const gameContainer = document.getElementById("game-container");
   const mainHeader = document.querySelector("header.main");
+  const mainNav = document.querySelector("nav.main-menu");
 
-  // Toggle visibility of the upload UI
-  uploadMenuBtn.addEventListener("click", () => {
-    uploadPanel.classList.toggle("visible");
+  function showUploadPanel() {
+    uploadPanel.classList.add("visible");
+    mainNav.style.display = "none";
     status.textContent = "";
     output.textContent = "";
-  });
+  }
 
-    // Hide upload panel on ESC
-    document.addEventListener("keydown", (e) => {
-      if (uploadPanel.classList.contains("visible") && (e.key === "Escape" || e.key === "Esc")) {
-        uploadPanel.classList.remove("visible");
-        status.textContent = "";
-        output.textContent = "";
-      }
-    });
+  function hideUploadPanel() {
+    uploadPanel.classList.remove("visible");
+    mainNav.style.display = "";
+    status.textContent = "";
+    output.textContent = "";
+  }
+
+  // Toggle visibility of the upload UI
+  uploadMenuBtn.addEventListener("click", showUploadPanel);
+
+  // Back button closes the upload panel
+  document.getElementById("uploadBackBtn").addEventListener("click", hideUploadPanel);
+
+  // Hide upload panel on ESC
+  document.addEventListener("keydown", (e) => {
+    if (uploadPanel.classList.contains("visible") && (e.key === "Escape" || e.key === "Esc")) {
+      hideUploadPanel();
+    }
+  });
   // Upload + parse + play
   uploadBtn.addEventListener("click", async () => {
     output.textContent = "";
