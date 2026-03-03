@@ -1,8 +1,12 @@
 const config = {
     type: Phaser.AUTO,
-    width: 1280,
-    height: 720,
+    width: window.innerWidth,
+    height: window.innerHeight,
     parent: 'game-container',
+    scale: {
+        mode: Phaser.Scale.RESIZE,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+    },
     physics: {
         default: 'arcade',
         arcade: { gravity: { y: 300 }, debug: false }
@@ -23,6 +27,8 @@ let monstersGroup;
 let underscores;
 let dropping = false;
 let dropEndTime = 0;
+let jumpTime = 0;
+const maxJumpTime = 200; // milliseconds player can hold for higher jump
 
 // Returns hitbox dimensions based on character shape
 function getHitboxForSymbol(symbol, cellSize) {
@@ -314,8 +320,8 @@ function handleFinishCollision(player, finish) {
     completeText.setScrollFactor(0);
     menuText.setScrollFactor(0);
     // Reposition to screen center since scroll factor is 0
-    completeText.setPosition(config.width / 2, config.height / 2);
-    menuText.setPosition(config.width / 2, config.height / 2 + 60);
+    completeText.setPosition(game.scale.width / 2, game.scale.height / 2);
+    menuText.setPosition(game.scale.width / 2, game.scale.height / 2 + 60);
     scene.physics.pause();
 }
 
@@ -351,8 +357,26 @@ function update() {
         player.body.setVelocityX(0);
     }
 
-    if (cursors.up.isDown && player.body.blocked.down) {
-        player.body.setVelocityY(-250);
+    // Variable jump height - hold W longer for higher jumps
+    if (player.body.blocked.down) {
+        jumpTime = 0;
+    }
+
+    if (cursors.up.isDown) {
+        if (player.body.blocked.down) {
+            // Start jump
+            player.body.setVelocityY(-200);
+            jumpTime = 1;
+        } else if (jumpTime > 0 && jumpTime < maxJumpTime) {
+            // Continue adding upward velocity while holding W
+            player.body.setVelocityY(-200);
+            jumpTime += 16; // approximate frame time
+        }
+    } else {
+        // Key released, stop adding jump force
+        if (jumpTime > 0) {
+            jumpTime = maxJumpTime; // prevent further boosting
+        }
     }
 
     if (cursors.down.isDown && !dropping && player.body.blocked.down) {

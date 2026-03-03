@@ -1,0 +1,27 @@
+HARD LEVEL
+
+
+                                                #   |
+                                                    |
+                                          M         |
+                              TTTTT   TTTTTTT       |
+                                                    |
+              Z    ^^^^             TTTTT           |
+              TTTTTTTTTTTTT                    TTTTTTT
+                                              T
+                         TTTTTT  TTTTTTTTT
+              ^^^      TT              |
+    TTTTT   TTTTTTT                    |     
+                                     TTTTTTTTTTT
+  TTTTTTTTT             ^^
+                  M              
+  ^^^^^     TTTTTTTTTTT    TTTT^^TT
+                    ^^^^                    
+TTTTT   TTTTTT                              TT^^TT
+            
+                                        Z
+  $                           TTTTT^^TTTT
+
+TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

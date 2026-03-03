@@ -1,6 +1,20 @@
 # Textplorer
 This is the respository for our CS 362 project
 
+## HOW TO BUILD
+Visit https://textplorer-cs362-85c336ddf2eb.herokuapp.com/ to run and play our game!
+
+(To build locally, have Node.js installed, clone the repository,
+and run "node server.js" in the terminal while in the repository's top level directory)
+
+## OPERATIONAL USE CASES 
+### (Read living document in /documents/Team 1 CS362-Living_Document 21426.pdf for more detailed descriptions)
+
+- Level Creation and Loading
+- Player Movement and Physics
+- Navigating the User Interface
+- Level Completion and Validation
+
 ## Team Members
 - Norman Nomie
 - Drew Inglesby

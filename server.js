@@ -48,7 +48,19 @@ app.post("/api/parse-level", upload.single("level"), (req, res) => {
 app.get("/api/load-sample-level", (req, res) => {
   try {
     const fs = require("fs");
-    const sampleLevelPath = path.join(__dirname, "public", "test-level.txt");
+
+    const levelMap = {
+      easy:       "easy.txt",
+      medium:     "medium.txt",
+      hard:       "hard.txt",
+      veryhard:   "veryhard.txt",
+      impossible: "impossible.txt"
+    };
+
+    const levelKey = req.query.level || "easy";
+    const filename = levelMap[levelKey] || "easy.txt";
+    const sampleLevelPath = path.join(__dirname, "public", "levels", filename);
+
     const text = fs.readFileSync(sampleLevelPath, "utf-8");
     const parsed = parseLevelText(text);
     return res.json(parsed);
