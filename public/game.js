@@ -191,7 +191,11 @@ function renderLevel(levelData) {
         scene.physics.add.existing(wallText, true); // true = static body
         const hitbox = getHitboxForSymbol(symbol, cellSize);
         wallText.body.setSize(hitbox.width, hitbox.height);
-        walls.add(wallText);
+        if (symbol === 'T') {
+            underscores.add(wallText);
+        } else {
+            walls.add(wallText);
+        }
         if (isRainbow) {
             rainbowTexts.push({ text: wallText, xOffset: wall.x });
         }
