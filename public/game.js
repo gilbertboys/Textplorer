@@ -1,3 +1,7 @@
+let timerText;
+let timerStart;
+let timerRunning = false;
+
 const config = {
     type: Phaser.AUTO,
     width: window.innerWidth,
@@ -270,6 +274,17 @@ function renderLevel(levelData) {
 
     // Store reference to level data for restart functionality
     player.spawnPoint = spawnPoint;
+
+    // Start timer
+    timerStart = Date.now();
+    timerRunning = true;
+
+    // Display timer in top-left corner
+    timerText = scene.add.text(16, 16, '0.000s', {
+        fontSize: '24px',
+        fill: '#ffffff',
+        fontFamily: 'monospace'
+    }).setScrollFactor(0).setDepth(999);
 }
 
 function handleSpikeCollision(player, spike) {
@@ -309,6 +324,9 @@ function handleFinishCollision(player, finish) {
     // Reposition to screen center since scroll factor is 0
     completeText.setPosition(game.scale.width / 2, game.scale.height / 2);
     menuText.setPosition(game.scale.width / 2, game.scale.height / 2 + 60);
+    timerRunning = false;
+    const elapsed = ((Date.now() - timerStart) / 1000).toFixed(3);
+    timerText.setText('Time: ' + elapsed + 's');
     scene.physics.pause();
 }
 
@@ -374,5 +392,10 @@ function update() {
                 monster.body.setVelocityX(100);
             }
         });
+    }
+
+    if (timerRunning && timerText) {
+        const elapsed = ((Date.now() - timerStart) / 1000).toFixed(3);
+        timerText.setText(elapsed + 's');
     }
 }

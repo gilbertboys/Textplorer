@@ -1,27 +1,27 @@
-VERY HARD LEVEL - STILL WORKING ON IT
+VERY HARD LEVEL - SPILL WORKING ON IP
 
                                                           #
-                                                    ^^TTTTT
-                                               |
-                                          TTTTT|
+                                                    ^^P^PPP
+                                               |^P^P
+                                          PPPPP|
                                     M          |
-                              ^^TTT^^      TTTT|
-                                    TTTTT      |
-                         |                     |
-                    TTTTT|    ^^^              |
-                         |          M      TTTTT
-              ^^^        |    TT^^TT
-         TTTTT      TTTT |
-                         |              Z
-              M     ^^^^ |         TTTTT^^TTT
-    TT^^TT         TTTTT |
-                         |    ^^^
-  TTTTT    ^^^           |
-              TT^^TT          TTTT    M    TTTT
-  ^^^                    TTTTT
-        Z           ^^^            TT^^TT
-  TTTTT    TT^^TT        TTTTT
+                              ^^PPP^^      PPPP|
+                                    PPPPP      |
+                     M   |                     |
+                    PPPPP|    ^^^         Z    |
+                         |          M     PPPPPP
+         M    ^^^P^^     |    PP^^PP
+         PPPPP      PPPP |
+      P                  |              Z
+             PM     ^^^^ |         PPPPP^^PPP
+    PP^^PP    P    PPPPP |
+                 P       |    ^^^
+  PPPPP    ^^^           |
+              PP^^PP          PPPP    M    PPPP
+  ^^^                    PPPPP
+            M       ^^^P  M        PP^^PP
+  PPPPP    PP^^PP        PPPPP
   $
-TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
