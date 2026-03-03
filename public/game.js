@@ -28,6 +28,9 @@ let springs;
 let finish;
 let spawnPoint;
 let monstersGroup;
+let underscores;
+let dropping = false;
+let dropEndTime = 0;
 let jumpTime = 0;
 const maxJumpTime = 200; // milliseconds player can hold for higher jump
 
@@ -97,9 +100,11 @@ function create(data) {
 
     // Initialize groups for physics interactions
     walls = this.physics.add.staticGroup();
+    underscores = this.physics.add.staticGroup();
     spikes = this.physics.add.group({ allowGravity: false, immovable: true });
     springs = this.physics.add.group({ allowGravity: false, immovable: true });
     monstersGroup = this.physics.add.group({ allowGravity: false });
+    dropping = false;
 
     // If we have level data (passed via launch or global), render it
     const levelData = data?.levelData || currentLevelData;
@@ -252,7 +257,7 @@ function renderLevel(levelData) {
     levelData.monsters.forEach(monster => {
         const x = monster.x * cellSize + cellSize / 2;
         const y = monster.y * cellSize + cellSize / 2;
-        const monsterText = scene.add.text(x, y, 'M', {
+        const monsterText = scene.add.text(x, y, '%', {
             fontSize: `${cellSize}px`,
             fill: '#ff0000',
             fontFamily: 'monospace'
@@ -260,12 +265,31 @@ function renderLevel(levelData) {
         scene.physics.add.existing(monsterText);
         monsterText.body.setAllowGravity(false);
         monsterText.body.setImmovable(false);
-        const hitbox = getHitboxForSymbol('M', cellSize);
+        const hitbox = getHitboxForSymbol('%', cellSize);
         monsterText.body.setSize(hitbox.width, hitbox.height);
         monsterText.patrolLeft = x;
         monsterText.patrolRight = x + 2 * cellSize;
         monsterText.body.setVelocityX(100);
         monstersGroup.add(monsterText);
+        scene.tweens.addCounter({
+            from: 0,
+            to: 5,
+            duration: 600,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+            onUpdate: function(tween) {
+                monsterText.setShadow(0, 0, '#ff0000', tween.getValue(), true, true);
+            }
+        });
+        scene.tweens.add({
+            targets: monsterText,
+            alpha: { from: 0.75, to: 1 },
+            duration: 600,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+        });
     });
 
     // Create finish point - disable gravity, make immovable
@@ -306,6 +330,10 @@ function renderLevel(levelData) {
 
     // Set up collisions
     scene.physics.add.collider(player, walls);
+    scene.physics.add.collider(player, underscores, null, function(player, _platform) {
+        if (dropping) return false;
+        return player.body.velocity.y >= 0;
+    }, scene);
     scene.physics.add.collider(spikes, walls);
     scene.physics.add.collider(springs, walls);
     scene.physics.add.overlap(player, spikes, handleSpikeCollision);
@@ -423,6 +451,14 @@ function update() {
         if (jumpTime > 0) {
             jumpTime = maxJumpTime; // prevent further boosting
         }
+    }
+
+    if (cursors.down.isDown && !dropping && player.body.blocked.down) {
+        dropping = true;
+        dropEndTime = Date.now() + 200;
+    }
+    if (dropping && Date.now() > dropEndTime) {
+        dropping = false;
     }
 
     if (monstersGroup) {

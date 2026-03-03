@@ -63,7 +63,7 @@ function parseLevelText(levelText) {
         continue;
       }
 
-      if (ch === "M") {
+      if (ch === "%") {
         monsters.push({ x, y });
         continue;
       }
