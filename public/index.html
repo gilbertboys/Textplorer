@@ -30,6 +30,8 @@
                 <p id="status" class="upload-status"></p>
 
                 <pre id="output" class="upload-output"></pre>
+
+                <button id="uploadBackBtn" class="menu-btn" style="margin-top: 20px;">← Back</button>
             </div>
 
         </div>
@@ -62,7 +64,7 @@
                 <li><b>T</b> Is a trapdoor, you can jump from underneath and hit 'S' to drop below</li>
                 <li><b>%</b> Is a monster, if you touch it you will restart</li>
             </ul>
-            <p class="esc-note">Press Esc to return to main menu</p>
+            <button id="aboutBackBtn" class="menu-btn" style="margin-top: 20px;">← Back</button>
         </div>
     </div>
 
@@ -87,6 +89,7 @@
         }
 
         aboutBtn.addEventListener('click', showAbout);
+        document.getElementById('aboutBackBtn').addEventListener('click', hideAbout);
 
         document.addEventListener('keydown', function(e) {
             if (aboutScreen.style.display === 'block' && (e.key === 'Escape' || e.key === 'Esc')) {
