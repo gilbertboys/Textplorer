@@ -4,24 +4,24 @@ HARD LEVEL
                                                 #   |
                                                     |
                                           M         |
-                              TTTTT   TTTTTTT       |
+                              PPPPP   PPPPPPP       |
                                                     |
-              Z    ^^^^             TTTTT           |
-              TTTTTTTTTTTTT                    TTTTTTT
-                                              T
-                         TTTTTT  TTTTTTTTT
-              ^^^      TT              |
-    TTTTT   TTTTTTT                    |     
-                                     TTTTTTTTTTT
-  TTTTTTTTT             ^^
+              Z    ^^^^             PPPPP           |
+              PPPPPPPPPPPPP                    PPPPPPP
+                                              P
+                         PPPPPP  PPPPPPPPP
+              ^^^      PP              |
+    PPPPP   PPPPPPP                    |     
+                                     PPPPPPPPPPP
+  PPPPPPPPP             ^^
                   M              
-  ^^^^^     TTTTTTTTTTT    TTTT^^TT
+  ^^^^^     PPPPPPPPPPP    PPPP^^PP
                     ^^^^                    
-TTTTT   TTTTTT                              TT^^TT
+PPPPP   PPPPPP                              PP^^PP
             
                                         Z
-  $                           TTTTT^^TTTT
+  $                           PPPPP^^PPPP
 
-TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
