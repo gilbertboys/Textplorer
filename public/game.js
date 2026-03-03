@@ -20,6 +20,9 @@ let springs;
 let finish;
 let spawnPoint;
 let monstersGroup;
+let underscores;
+let dropping = false;
+let dropEndTime = 0;
 
 // Returns hitbox dimensions based on character shape
 function getHitboxForSymbol(symbol, cellSize) {
@@ -87,9 +90,11 @@ function create(data) {
 
     // Initialize groups for physics interactions
     walls = this.physics.add.staticGroup();
+    underscores = this.physics.add.staticGroup();
     spikes = this.physics.add.group({ allowGravity: false, immovable: true });
     springs = this.physics.add.group({ allowGravity: false, immovable: true });
     monstersGroup = this.physics.add.group({ allowGravity: false });
+    dropping = false;
 
     // If we have level data (passed via launch or global), render it
     const levelData = data?.levelData || currentLevelData;
@@ -156,7 +161,11 @@ function renderLevel(levelData) {
         scene.physics.add.existing(wallText, true); // true = static body
         const hitbox = getHitboxForSymbol(symbol, cellSize);
         wallText.body.setSize(hitbox.width, hitbox.height);
-        walls.add(wallText);
+        if (symbol === 'T') {
+            underscores.add(wallText);
+        } else {
+            walls.add(wallText);
+        }
     });
 
     // Create spikes
@@ -201,7 +210,7 @@ function renderLevel(levelData) {
     levelData.monsters.forEach(monster => {
         const x = monster.x * cellSize + cellSize / 2;
         const y = monster.y * cellSize + cellSize / 2;
-        const monsterText = scene.add.text(x, y, 'M', {
+        const monsterText = scene.add.text(x, y, '%', {
             fontSize: `${cellSize}px`,
             fill: '#ff0000',
             fontFamily: 'monospace'
@@ -209,7 +218,7 @@ function renderLevel(levelData) {
         scene.physics.add.existing(monsterText);
         monsterText.body.setAllowGravity(false);
         monsterText.body.setImmovable(false);
-        const hitbox = getHitboxForSymbol('M', cellSize);
+        const hitbox = getHitboxForSymbol('%', cellSize);
         monsterText.body.setSize(hitbox.width, hitbox.height);
         monsterText.patrolLeft = x;
         monsterText.patrolRight = x + 2 * cellSize;
@@ -255,6 +264,10 @@ function renderLevel(levelData) {
 
     // Set up collisions
     scene.physics.add.collider(player, walls);
+    scene.physics.add.collider(player, underscores, null, function(player, _platform) {
+        if (dropping) return false;
+        return player.body.velocity.y >= 0;
+    }, scene);
     scene.physics.add.collider(spikes, walls);
     scene.physics.add.collider(springs, walls);
     scene.physics.add.overlap(player, spikes, handleSpikeCollision);
@@ -340,6 +353,14 @@ function update() {
 
     if (cursors.up.isDown && player.body.blocked.down) {
         player.body.setVelocityY(-250);
+    }
+
+    if (cursors.down.isDown && !dropping && player.body.blocked.down) {
+        dropping = true;
+        dropEndTime = Date.now() + 200;
+    }
+    if (dropping && Date.now() > dropEndTime) {
+        dropping = false;
     }
 
     if (monstersGroup) {
