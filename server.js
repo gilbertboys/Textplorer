@@ -2,6 +2,7 @@
 const express = require("express");
 const path = require("path");
 const multer = require("multer");
+const fs = require("fs");
 
 const { parseLevelText } = require("./parser/levelParser");
 
@@ -11,6 +12,45 @@ const PORT = process.env.PORT || 3000;
 // Multer setup: store uploads in memory (no disk files)
 const upload = multer({ storage: multer.memoryStorage() });
 
+// Path for storing user-uploaded levels
+const userLevelsPath = path.join(__dirname, "user-levels.json");
+
+// Helper to load user levels from JSON file
+function loadUserLevels() {
+  if (!fs.existsSync(userLevelsPath)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(userLevelsPath, "utf-8"));
+  } catch (err) {
+    return {};
+  }
+}
+
+// Helper to save user levels to JSON file
+function saveUserLevels(levels) {
+  fs.writeFileSync(userLevelsPath, JSON.stringify(levels, null, 2));
+}
+
+// Helper to generate unique level key from filename
+function generateUniqueLevelKey(filename, existingKeys) {
+  // Remove .txt extension and sanitize
+  let baseName = filename.replace(/\.txt$/i, "").trim();
+  if (!baseName) baseName = "level";
+  
+  // Check if this name already exists
+  if (!existingKeys.includes(baseName)) {
+    return baseName;
+  }
+  
+  // Add number suffix to make unique
+  let counter = 1;
+  let newKey = `${baseName}_${counter}`;
+  while (existingKeys.includes(newKey)) {
+    counter++;
+    newKey = `${baseName}_${counter}`;
+  }
+  return newKey;
+}
+
 // Serve static files from /public
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -18,6 +58,7 @@ app.use(express.static(path.join(__dirname, "public")));
  * POST /api/parse-level
  * Expects a multipart/form-data upload with field name: "level"
  * Returns parsed JSON describing the level.
+ * Optionally stores the level if 'save' query param is true.
  */
 app.post("/api/parse-level", upload.single("level"), (req, res) => {
   try {
@@ -35,6 +76,26 @@ app.post("/api/parse-level", upload.single("level"), (req, res) => {
     }
 
     const parsed = parseLevelText(text);
+    
+    // If save=true, store the level persistently
+    if (req.query.save === "true") {
+      const userLevels = loadUserLevels();
+      const existingKeys = Object.keys(userLevels);
+      const originalFilename = req.file.originalname || "level.txt";
+      const levelKey = generateUniqueLevelKey(originalFilename, existingKeys);
+      
+      userLevels[levelKey] = {
+        name: levelKey,
+        originalFilename: originalFilename,
+        levelData: parsed,
+        uploadedAt: new Date().toISOString()
+      };
+      
+      saveUserLevels(userLevels);
+      
+      return res.json({ ...parsed, levelKey: levelKey });
+    }
+    
     return res.json(parsed);
   } catch (err) {
     return res.status(400).json({ error: err.message || "Failed to parse level." });
@@ -47,8 +108,6 @@ app.post("/api/parse-level", upload.single("level"), (req, res) => {
  */
 app.get("/api/load-sample-level", (req, res) => {
   try {
-    const fs = require("fs");
-
     const levelMap = {
       easy:       "easy.txt",
       medium:     "medium.txt",
@@ -69,7 +128,65 @@ app.get("/api/load-sample-level", (req, res) => {
   }
 });
 
-const fs = require("fs");
+/**
+ * GET /api/search-user-levels?q=searchterm
+ * Searches for user-uploaded levels by filename
+ */
+app.get("/api/search-user-levels", (req, res) => {
+  try {
+    const query = (req.query.q || "").toLowerCase().trim();
+    const userLevels = loadUserLevels();
+    
+    let results = Object.values(userLevels);
+    
+    // If query is provided, filter by name
+    if (query) {
+      results = results.filter(level => 
+        level.name.toLowerCase().includes(query) ||
+        level.originalFilename.toLowerCase().includes(query)
+      );
+    }
+    
+    // Sort by upload date (newest first)
+    results.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+    
+    // Return without full level data (just metadata)
+    const simplified = results.map(level => ({
+      key: level.name,
+      name: level.name,
+      originalFilename: level.originalFilename,
+      uploadedAt: level.uploadedAt
+    }));
+    
+    return res.json(simplified);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to search levels." });
+  }
+});
+
+/**
+ * GET /api/get-user-level?key=levelkey
+ * Gets a specific user-uploaded level by its key
+ */
+app.get("/api/get-user-level", (req, res) => {
+  try {
+    const key = req.query.key;
+    if (!key) {
+      return res.status(400).json({ error: "Level key required." });
+    }
+    
+    const userLevels = loadUserLevels();
+    const level = userLevels[key];
+    
+    if (!level) {
+      return res.status(404).json({ error: "Level not found." });
+    }
+    
+    return res.json(level.levelData);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to load level." });
+  }
+});
 
 // GET /api/get-scores?level=easy
 app.get("/api/get-scores", (req, res) => {

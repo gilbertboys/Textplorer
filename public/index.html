@@ -17,6 +17,7 @@
                 <ul>
                     <li><a class="menu-btn" href="levels.html">Play Sample Levels</a></li>
                     <li><a class="menu-btn" id="uploadMenuBtn">Upload Your Own Level</a></li>
+                    <li><a class="menu-btn" id="searchMenuBtn">Search User Levels</a></li>
                     <li><button id="about-btn" class="menu-btn">About</button></li>
                     <li><a class="menu-btn" href="https://github.com/gilbertboys/Textplorer" target="_blank">Source Code</a></li>
                 </ul>
@@ -32,6 +33,20 @@
                 <pre id="output" class="upload-output"></pre>
 
                 <button id="uploadBackBtn" class="menu-btn" style="margin-top: 20px;">← Back</button>
+            </div>
+
+            <!-- Search Panel (hidden until user clicks "Search User Levels") -->
+            <div id="searchPanel" class="upload-panel">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input id="searchInput" type="text" placeholder="Search by level name..." 
+                           style="background: #111; color: #fff; border: 1px solid #9cb4f1; 
+                                  padding: 8px 12px; font-family: 'Courier New', monospace;
+                                  font-size: 16px; width: 250px;" autocomplete="off" />
+                    <button id="searchBtn" class="menu-btn">Search</button>
+                </div>
+                <p id="searchStatus" class="upload-status"></p>
+                <div id="searchResults" style="max-height: 400px; overflow-y: auto; width: 100%; max-width: 600px;"></div>
+                <button id="searchBackBtn" class="menu-btn" style="margin-top: 20px;">← Back</button>
             </div>
 
         </div>
@@ -109,6 +124,165 @@
 
     <!-- JS for Upload Level UI -->
     <script src="parser-ui.js"></script>
+
+    <!-- JS for Search User Levels -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchMenuBtn = document.getElementById('searchMenuBtn');
+        const searchPanel = document.getElementById('searchPanel');
+        const searchBackBtn = document.getElementById('searchBackBtn');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const searchStatus = document.getElementById('searchStatus');
+        const searchResults = document.getElementById('searchResults');
+        const mainNav = document.querySelector('nav.main-menu');
+        const mainHeader = document.querySelector('header.main');
+        const gameContainer = document.getElementById('game-container');
+
+        function showSearchPanel() {
+            searchPanel.classList.add('visible');
+            mainNav.style.display = 'none';
+            searchStatus.textContent = '';
+            searchResults.innerHTML = '';
+            searchInput.value = '';
+            // Load all levels initially
+            performSearch('');
+        }
+
+        function hideSearchPanel() {
+            searchPanel.classList.remove('visible');
+            mainNav.style.display = '';
+            searchStatus.textContent = '';
+            searchResults.innerHTML = '';
+        }
+
+        async function performSearch(query) {
+            searchStatus.textContent = 'Searching...';
+            searchResults.innerHTML = '';
+
+            try {
+                const res = await fetch('/api/search-user-levels?q=' + encodeURIComponent(query));
+                const levels = await res.json();
+
+                if (levels.length === 0) {
+                    searchStatus.textContent = 'No levels found.';
+                    return;
+                }
+
+                searchStatus.textContent = `Found ${levels.length} level(s):`;
+
+                for (const level of levels) {
+                    const levelDiv = document.createElement('div');
+                    levelDiv.style.cssText = 'background: #1a1a1a; border: 1px solid #333; padding: 15px; margin: 10px 0; text-align: left;';
+                    
+                    const header = document.createElement('div');
+                    header.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;';
+                    
+                    const nameEl = document.createElement('span');
+                    nameEl.style.cssText = 'color: #9cb4f1; font-size: 18px; font-weight: bold;';
+                    nameEl.textContent = level.name;
+                    header.appendChild(nameEl);
+
+                    const playBtn = document.createElement('button');
+                    playBtn.className = 'menu-btn';
+                    playBtn.textContent = 'Play';
+                    playBtn.style.cssText = 'padding: 5px 15px; height: auto; font-size: 14px;';
+                    playBtn.onclick = () => playUserLevel(level.key);
+                    header.appendChild(playBtn);
+                    
+                    levelDiv.appendChild(header);
+
+                    const dateEl = document.createElement('div');
+                    dateEl.style.cssText = 'color: #666; font-size: 12px; margin-bottom: 10px;';
+                    dateEl.textContent = 'Uploaded: ' + new Date(level.uploadedAt).toLocaleString();
+                    levelDiv.appendChild(dateEl);
+
+                    // Leaderboard section
+                    const leaderboardDiv = document.createElement('div');
+                    leaderboardDiv.style.cssText = 'border-top: 1px solid #333; padding-top: 10px;';
+                    leaderboardDiv.innerHTML = '<span style="color: #ffc75f; font-size: 14px;">Top Times:</span><div class="lb-entries" style="margin-top: 5px;"></div>';
+                    levelDiv.appendChild(leaderboardDiv);
+
+                    // Load leaderboard for this level
+                    const lbEntries = leaderboardDiv.querySelector('.lb-entries');
+                    try {
+                        const scoresRes = await fetch('/api/get-scores?level=' + encodeURIComponent(level.key));
+                        const scores = await scoresRes.json();
+                        
+                        if (scores.length === 0) {
+                            lbEntries.innerHTML = '<div style="color: #555; font-size: 13px;">No times yet. Be the first!</div>';
+                        } else {
+                            scores.slice(0, 5).forEach((s, i) => {
+                                const row = document.createElement('div');
+                                row.style.cssText = 'color: #ccc; font-size: 13px; margin: 3px 0;';
+                                row.textContent = `${i + 1}. ${s.name.padEnd(15)} ${s.time.toFixed(3)}s`;
+                                lbEntries.appendChild(row);
+                            });
+                        }
+                    } catch (err) {
+                        lbEntries.innerHTML = '<div style="color: #555; font-size: 13px;">Could not load leaderboard.</div>';
+                    }
+
+                    searchResults.appendChild(levelDiv);
+                }
+            } catch (err) {
+                searchStatus.textContent = 'Error searching levels.';
+                console.error(err);
+            }
+        }
+
+        async function playUserLevel(levelKey) {
+            try {
+                const res = await fetch('/api/get-user-level?key=' + encodeURIComponent(levelKey));
+                if (!res.ok) {
+                    alert('Failed to load level');
+                    return;
+                }
+                const levelData = await res.json();
+
+                currentLevelData = levelData;
+                currentLevelKey = levelKey;
+                searchPanel.classList.remove('visible');
+                mainHeader.style.display = 'none';
+                gameContainer.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+
+                game.scene.stop('default');
+                game.scene.start('default', { levelData: levelData });
+            } catch (err) {
+                alert('Error loading level: ' + err.message);
+                console.error(err);
+            }
+        }
+
+        searchMenuBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showSearchPanel();
+        });
+
+        searchBackBtn.addEventListener('click', hideSearchPanel);
+
+        searchBtn.addEventListener('click', function() {
+            performSearch(searchInput.value.trim());
+        });
+
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                performSearch(searchInput.value.trim());
+            }
+            if (e.key === 'Escape') {
+                hideSearchPanel();
+            }
+        });
+
+        // ESC to close search panel
+        document.addEventListener('keydown', function(e) {
+            if (searchPanel.classList.contains('visible') && (e.key === 'Escape')) {
+                hideSearchPanel();
+            }
+        });
+    });
+    </script>
 
     <!-- JS for Play Sample Level -->
     <script>

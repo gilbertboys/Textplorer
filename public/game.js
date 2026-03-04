@@ -128,12 +128,15 @@ function create(data) {
         logo.body.setBounce(0.8).setCollideWorldBounds(true);
     }
 
+    // Disable global key capture so WASD can be typed in input fields
+    this.input.keyboard.disableGlobalCapture();
+
     cursors = this.input.keyboard.addKeys({
         up: Phaser.Input.Keyboard.KeyCodes.W,
         down: Phaser.Input.Keyboard.KeyCodes.S,
         left: Phaser.Input.Keyboard.KeyCodes.A,
         right: Phaser.Input.Keyboard.KeyCodes.D
-    });
+    }, false);  // false = don't capture/preventDefault these keys
 
     // ESC to return to menu
     this.input.keyboard.on('keydown-ESC', returnToMenu);
@@ -509,6 +512,12 @@ function returnToMenu() {
 
 function update() {
     if (!player) return;
+
+    // Skip keyboard handling if user is typing in an input field
+    const activeElement = document.activeElement;
+    if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+        return;
+    }
 
     const speed = 200;
 

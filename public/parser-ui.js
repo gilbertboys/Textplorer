@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       status.textContent = "Uploading + parsing...";
 
-      const res = await fetch("/api/parse-level", {
+      const res = await fetch("/api/parse-level?save=true", {
         method: "POST",
         body: formData,
       });
@@ -92,7 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // Restart game scene with uploaded level data
       game.scene.stop("default");
       game.scene.start("default", { levelData: data });
-      currentLevelKey = null;
+      // Set the level key for leaderboard submissions (user-uploaded level)
+      currentLevelKey = data.levelKey || null;
 
     } catch (err) {
       status.textContent = "Request failed ❌";
