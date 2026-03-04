@@ -30,25 +30,25 @@ function saveUserLevels(levels) {
   fs.writeFileSync(userLevelsPath, JSON.stringify(levels, null, 2));
 }
 
-// Helper to generate unique level key from filename
-function generateUniqueLevelKey(filename, existingKeys) {
+// Helper to get level key from filename
+function getLevelKeyFromFilename(filename) {
   // Remove .txt extension and sanitize
   let baseName = filename.replace(/\.txt$/i, "").trim();
   if (!baseName) baseName = "level";
-  
-  // Check if this name already exists
-  if (!existingKeys.includes(baseName)) {
-    return baseName;
+  return baseName;
+}
+
+// Helper to clear scores for a specific level
+function clearScoresForLevel(levelKey) {
+  const scoresPath = path.join(__dirname, "scores.json");
+  if (!fs.existsSync(scoresPath)) return;
+  try {
+    let scores = JSON.parse(fs.readFileSync(scoresPath, "utf-8"));
+    scores = scores.filter(s => s.level !== levelKey);
+    fs.writeFileSync(scoresPath, JSON.stringify(scores, null, 2));
+  } catch (err) {
+    // Ignore errors when clearing scores
   }
-  
-  // Add number suffix to make unique
-  let counter = 1;
-  let newKey = `${baseName}_${counter}`;
-  while (existingKeys.includes(newKey)) {
-    counter++;
-    newKey = `${baseName}_${counter}`;
-  }
-  return newKey;
 }
 
 // Serve static files from /public
@@ -80,9 +80,13 @@ app.post("/api/parse-level", upload.single("level"), (req, res) => {
     // If save=true, store the level persistently
     if (req.query.save === "true") {
       const userLevels = loadUserLevels();
-      const existingKeys = Object.keys(userLevels);
       const originalFilename = req.file.originalname || "level.txt";
-      const levelKey = generateUniqueLevelKey(originalFilename, existingKeys);
+      const levelKey = getLevelKeyFromFilename(originalFilename);
+      
+      // If level already exists, clear its leaderboard
+      if (userLevels[levelKey]) {
+        clearScoresForLevel(levelKey);
+      }
       
       userLevels[levelKey] = {
         name: levelKey,
