@@ -43,7 +43,8 @@ function getHitboxForSymbol(symbol, cellSize) {
         '|': { width: cellSize * 0.2, height: cellSize * 0.9 },
         // Horizontal lines - wide and short
         '-': { width: cellSize * 0.8, height: cellSize * 0.2 },
-        '_': { width: cellSize * 0.9, height: cellSize * 0.15 },
+        // Underscore sits at the very bottom of the character cell
+        '_': { width: cellSize * 0.8, height: cellSize * 0.05, offsetY: cellSize * 0.7 },
         '=': { width: cellSize * 0.8, height: cellSize * 0.5 },
         // Square-ish characters
         '#': { width: cellSize * 0.85, height: cellSize * 0.85 },
@@ -194,6 +195,9 @@ function renderLevel(levelData) {
         scene.physics.add.existing(wallText, true); // true = static body
         const hitbox = getHitboxForSymbol(symbol, cellSize);
         wallText.body.setSize(hitbox.width, hitbox.height);
+        if (hitbox.offsetX || hitbox.offsetY) {
+            wallText.body.setOffset(hitbox.offsetX || 0, hitbox.offsetY || 0);
+        }
         if (symbol === 'T') {
             underscores.add(wallText);
         } else {
@@ -239,6 +243,9 @@ function renderLevel(levelData) {
         spikeText.body.setImmovable(true);
         const hitbox = getHitboxForSymbol(symbol, cellSize);
         spikeText.body.setSize(hitbox.width, hitbox.height);
+        if (hitbox.offsetX || hitbox.offsetY) {
+            spikeText.body.setOffset(hitbox.offsetX || 0, hitbox.offsetY || 0);
+        }
         spikes.add(spikeText);
         spikeText.isDangerous = true;
     });
@@ -258,6 +265,9 @@ function renderLevel(levelData) {
         springText.body.setImmovable(true);
         const hitbox = getHitboxForSymbol(symbol, cellSize);
         springText.body.setSize(hitbox.width, hitbox.height);
+        if (hitbox.offsetX || hitbox.offsetY) {
+            springText.body.setOffset(hitbox.offsetX || 0, hitbox.offsetY || 0);
+        }
         springs.add(springText);
         springText.isSpring = true;
     });
@@ -276,6 +286,9 @@ function renderLevel(levelData) {
         monsterText.body.setImmovable(false);
         const hitbox = getHitboxForSymbol('%', cellSize);
         monsterText.body.setSize(hitbox.width, hitbox.height);
+        if (hitbox.offsetX || hitbox.offsetY) {
+            monsterText.body.setOffset(hitbox.offsetX || 0, hitbox.offsetY || 0);
+        }
         monsterText.patrolLeft = x;
         monsterText.patrolRight = x + 2 * cellSize;
         monsterText.body.setVelocityX(100);
