@@ -21,7 +21,7 @@ body {
 }
 
 .main-content {
-    background: #111;
+    background: transparent;
     padding: 2em 3em;
 }
 
@@ -59,7 +59,7 @@ body {
     color: #975439;
     text-decoration: none;
     border: 1px solid #9cb4f1;
-    background: none;
+    background: #111;
     cursor: pointer;
     height: 40px; /* fixed height for consistency */
 }
@@ -80,7 +80,7 @@ body {
     font-size: 1rem;
     color: #975439;
     border: 1px solid #9cb4f1;
-    background: none;
+    background: #111;
     cursor: pointer;
     height: 40px;
 }
@@ -108,7 +108,7 @@ body {
 #about-screen .description-section-content {
     max-width: 800px;
     margin: 0 auto;
-    background: #111;
+    background: transparent;
     padding: 2em 3em;
 }
 
