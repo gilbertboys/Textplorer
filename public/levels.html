@@ -74,6 +74,17 @@
 
     const levelKeys = ['easy', 'medium', 'hard', 'veryhard', 'impossible'];
 
+    // ESC key to go back to main menu from level select screen
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' || e.key === 'Esc') {
+            const gameContainer = document.getElementById('game-container');
+            // Only go back if game is not active (still on select screen)
+            if (gameContainer.style.display === 'none' || gameContainer.style.display === '') {
+                window.location.href = 'index.html';
+            }
+        }
+    });
+
     </script>
 </body>
 </html>
