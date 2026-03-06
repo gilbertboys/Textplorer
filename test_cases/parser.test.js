@@ -43,3 +43,28 @@ describe('Textplorer Parser - Jack Dunlap', () => {
         expect(result.finish).toEqual({ x: 9, y: 4 });
     });
 });
+describe("Textplorer Parser - Norman Nomie", () => {
+
+    test('Should throw error if multiple spawn points exist', () => {
+        const levelData =
+`**********
+*$      $*
+*        *
+*        *
+*********#`;
+
+        expect(() => parseLevelText(levelData)).toThrow();
+    });
+
+    test('Should throw error if multiple goal tiles exist', () => {
+        const levelData =
+`**********
+*$       *
+*        #
+*        *
+*********#`;
+
+        expect(() => parseLevelText(levelData)).toThrow();
+    });
+
+});
