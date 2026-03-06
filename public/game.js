@@ -141,6 +141,18 @@ function create(data) {
 
     // ESC to return to menu
     this.input.keyboard.on('keydown-ESC', returnToMenu);
+
+    // R to restart level
+    this.input.keyboard.on('keydown-R', restartLevel);
+}
+
+function restartLevel() {
+    if (!player || !spawnPoint) return;
+    player.setPosition(spawnPoint.x, spawnPoint.y);
+    player.setVelocity(0, 0);
+    dropping = false;
+    timerStart = Date.now();
+    timerRunning = true;
 }
 
 function renderLevel(levelData) {
@@ -370,8 +382,12 @@ function renderLevel(levelData) {
     timerStart = Date.now();
     timerRunning = true;
 
-    // Display timer in top-left corner
-    timerText = scene.add.text(16, 16, '0.000s', {
+    // Display timer in top-left corner with black background box
+    scene.add.rectangle(10, 10, 130, 36, 0x000000, 0.85)
+        .setOrigin(0, 0)
+        .setScrollFactor(0)
+        .setDepth(998);
+    timerText = scene.add.text(16, 13, '0.000s', {
         fontSize: '24px',
         fill: '#ffffff',
         fontFamily: 'monospace'
