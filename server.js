@@ -14,6 +14,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // Path for storing user-uploaded levels
 const userLevelsPath = path.join(__dirname, "user-levels.json");
+const ghostsPath = path.join(__dirname, "ghosts.json");
 
 // Helper to load user levels from JSON file
 function loadUserLevels() {
@@ -28,6 +29,19 @@ function loadUserLevels() {
 // Helper to save user levels to JSON file
 function saveUserLevels(levels) {
   fs.writeFileSync(userLevelsPath, JSON.stringify(levels, null, 2));
+}
+
+function loadGhosts() {
+  if (!fs.existsSync(ghostsPath)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(ghostsPath, "utf-8"));
+  } catch (err) {
+    return {};
+  }
+}
+
+function saveGhosts(ghosts) {
+  fs.writeFileSync(ghostsPath, JSON.stringify(ghosts, null, 2));
 }
 
 // Helper to get level key from filename
@@ -209,26 +223,74 @@ app.get("/api/get-scores", (req, res) => {
   }
 });
 
+// GET /api/get-ghost?level=easy
+app.get("/api/get-ghost", (req, res) => {
+  try {
+    const level = req.query.level;
+    if (!level) return res.status(400).json({ error: "Level is required." });
+
+    const ghosts = loadGhosts();
+    return res.json(ghosts[level] || null);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to get ghost data." });
+  }
+});
+
 // POST /api/submit-score
 app.use(express.json());
 app.post("/api/submit-score", (req, res) => {
   try {
-    const { level, name, time } = req.body;
-    if (!level || !name || !time) return res.status(400).json({ error: "Missing fields." });
+    const { level, name, time, ghostPath } = req.body;
+    if (!level || !name || !time) {
+      return res.status(400).json({ error: "Missing fields." });
+    }
+
     const scoresPath = path.join(__dirname, "scores.json");
     let scores = [];
+
     if (fs.existsSync(scoresPath)) {
       scores = JSON.parse(fs.readFileSync(scoresPath, "utf-8"));
     }
-    scores.push({ level, name: name.slice(0, 20), time: parseFloat(time) });
+
+    const parsedTime = parseFloat(time);
+    const trimmedName = name.slice(0, 20);
+
+    scores.push({
+      level,
+      name: trimmedName,
+      time: parsedTime
+    });
+
     fs.writeFileSync(scoresPath, JSON.stringify(scores, null, 2));
+
+    // Save ghost only if this is the new best time for the level
+    const levelScores = scores
+      .filter(s => s.level === level)
+      .sort((a, b) => a.time - b.time);
+
+    const bestScore = levelScores[0];
+
+    if (
+      bestScore &&
+      bestScore.name === trimmedName &&
+      bestScore.time === parsedTime &&
+      Array.isArray(ghostPath) &&
+      ghostPath.length > 0
+    ) {
+      const ghosts = loadGhosts();
+      ghosts[level] = {
+        name: trimmedName,
+        time: parsedTime,
+        path: ghostPath
+      };
+      saveGhosts(ghosts);
+    }
+
     return res.json({ success: true });
   } catch (err) {
     return res.status(500).json({ error: "Failed to save score." });
   }
 });
-
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
