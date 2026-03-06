@@ -66,5 +66,18 @@ describe("Textplorer Parser - Norman Nomie", () => {
 
         expect(() => parseLevelText(levelData)).toThrow();
     });
+    test('Should throw error for missing goal tile', () => {
+	const levelData =
+`**********
+*$       *
+*        *
+**********`;
 
+	expect(() => parseLevelText(levelData)).toThrow();
+    });
+    test('Should throw error for empty level input', () => {
+	const levelData = "";
+
+	expect(() => parseLevelText(levelData)).toThrow();
+    });
 });
