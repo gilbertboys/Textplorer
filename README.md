@@ -68,7 +68,7 @@ Different characters mean different things in Textplorer!
 - `T` – Trapdoor
 - `Z` – Spring
 - `|` – Wall
-- 
+  
 **Level Requirements:**
   - The level must contain **exactly one spawn point (`$`)**
   - The level must contain **exactly one goal tile (`#`)**
