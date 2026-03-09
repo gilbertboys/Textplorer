@@ -42,6 +42,7 @@ let dropping = false;
 let dropEndTime = 0;
 let jumpTime = 0;
 const maxJumpTime = 200; // milliseconds player can hold for higher jump
+let currentLevelHeight = 0;
 
 // Returns hitbox dimensions based on character shape
 function getHitboxForSymbol(symbol, cellSize) {
@@ -299,9 +300,10 @@ function renderLevel(levelData) {
     const maxY = Math.max(...allElements.map(e => e.y)) + 1;
     const levelWidth = Math.max(maxX * cellSize, config.width);
     const levelHeight = Math.max(maxY * cellSize, config.height);
+    currentLevelHeight = levelHeight;
 
-    // Set world bounds to match level size
-    scene.physics.world.setBounds(0, 0, levelWidth, levelHeight);
+    // Set world bounds to match level size, extended downward so player can fall
+    scene.physics.world.setBounds(0, 0, levelWidth, levelHeight + 500);
 
     // Find positions of rainbow name characters (drew, jacob, jack, norman)
     const rainbowPositions = new Set();
