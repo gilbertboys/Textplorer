@@ -1,5 +1,6 @@
 node_modules/
 
 # Data files (generated at runtime)
+ghosts.json
 scores.json
 user-levels.json

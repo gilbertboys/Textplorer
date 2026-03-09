@@ -747,6 +747,18 @@ function update() {
         dropping = false;
     }
 
+    // Check if player has fallen to the bottom of the level
+    if (spawnPoint) {
+        const worldBounds = game.scene.scenes[0].physics.world.bounds;
+        if (player.y + player.body.height / 2 >= worldBounds.height - 1) {
+            // Reset player to spawn point
+            player.x = spawnPoint.x;
+            player.y = spawnPoint.y;
+            player.setVelocity(0, 0);
+            dropping = false;
+        }
+    }
+
     if (monstersGroup) {
         monstersGroup.getChildren().forEach(monster => {
             if (monster.x >= monster.patrolRight) {
