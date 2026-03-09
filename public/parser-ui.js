@@ -89,11 +89,12 @@ document.addEventListener("DOMContentLoaded", () => {
       gameContainer.style.display = "flex";
       document.body.style.overflow = "hidden";
 
+      // Set the level key BEFORE starting the scene so ghost data loads correctly
+      currentLevelKey = data.levelKey || null;
+
       // Restart game scene with uploaded level data
       game.scene.stop("default");
       game.scene.start("default", { levelData: data });
-      // Set the level key for leaderboard submissions (user-uploaded level)
-      currentLevelKey = data.levelKey || null;
 
     } catch (err) {
       status.textContent = "Request failed ❌";
