@@ -2,7 +2,14 @@ let timerText;
 let timerStart;
 let timerRunning = false;
 let currentLevelKey = null;
+let ghostRunData = [];
+let ghostRecordStart = 0;
+let lastGhostSampleTime = 0;
+const ghostSampleInterval = 50; // ms between recorded samples
 
+let activeGhostData = null;
+let ghostSprite = null;
+let ghostPlaybackStart = 0;
 
 const config = {
     type: Phaser.AUTO,
@@ -98,6 +105,118 @@ function preload() {
     this.load.image('playerFigure', 'stickman.png')
 }
 
+function resetGhostRecording() {
+    ghostRunData = [];
+    ghostRecordStart = Date.now();
+    lastGhostSampleTime = 0;
+}
+
+function recordGhostSample() {
+    if (!timerRunning || !player || !currentLevelKey) return;
+
+    const elapsed = Date.now() - ghostRecordStart;
+
+    if (elapsed - lastGhostSampleTime < ghostSampleInterval) return;
+
+    ghostRunData.push({
+        t: elapsed,
+        x: player.x,
+        y: player.y
+    });
+
+    lastGhostSampleTime = elapsed;
+}
+
+async function loadGhostData(levelKey) {
+    if (!levelKey) {
+        activeGhostData = null;
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/get-ghost?level=' + levelKey);
+        if (!response.ok) {
+            activeGhostData = null;
+            return;
+        }
+
+        activeGhostData = await response.json();
+    } catch (err) {
+        activeGhostData = null;
+    }
+}
+
+function createGhostSprite(scene) {
+    if (ghostSprite) {
+        ghostSprite.destroy();
+        ghostSprite = null;
+    }
+
+    if (!activeGhostData || !activeGhostData.path || activeGhostData.path.length === 0) return;
+
+    const firstPoint = activeGhostData.path[0];
+
+    if (scene.textures.exists('playerFigure')) {
+
+        ghostSprite = scene.add.sprite(firstPoint.x, firstPoint.y, 'playerFigure');
+
+        ghostSprite.setScale(0.55);
+
+        // bright aqua-green color
+        ghostSprite.setTint(0x7CFFB2);
+        ghostSprite.setAlpha(0.8);
+
+    } else {
+
+        ghostSprite = scene.add.rectangle(firstPoint.x, firstPoint.y, 32, 44, 0x00e5ff);
+        ghostSprite.setAlpha(0.9);
+
+    }
+
+    // draw above almost everything
+    ghostSprite.setDepth(5000);
+
+    // glow effect
+    scene.tweens.add({
+        targets: ghostSprite,
+        alpha: { from: 0.75, to: 0.95 },
+        duration: 350,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+    });
+
+    // outline glow
+    ghostSprite.setBlendMode(Phaser.BlendModes.ADD);
+}
+
+function startGhostPlayback(scene) {
+    ghostPlaybackStart = Date.now();
+    createGhostSprite(scene);
+}
+
+function updateGhostPlayback() {
+    if (!timerRunning || !ghostSprite || !activeGhostData || !activeGhostData.path) return;
+
+    const elapsed = Date.now() - ghostPlaybackStart;
+    const path = activeGhostData.path;
+
+    let latestPoint = null;
+
+    for (let i = 0; i < path.length; i++) {
+        if (path[i].t <= elapsed) {
+            latestPoint = path[i];
+        } else {
+            break;
+        }
+    }
+
+    if (!latestPoint) return;
+
+    ghostSprite.x = latestPoint.x;
+    ghostSprite.y = latestPoint.y;
+}
+
 function create(data) {
     // Clear all existing game objects
     this.children.removeAll();
@@ -154,11 +273,20 @@ function restartLevel() {
     dropping = false;
     timerStart = Date.now();
     timerRunning = true;
+    resetGhostRecording();
+    ghostPlaybackStart = Date.now();
+
+    if (ghostSprite && activeGhostData && activeGhostData.path && activeGhostData.path.length > 0) {
+        ghostSprite.x = activeGhostData.path[0].x;
+        ghostSprite.y = activeGhostData.path[0].y;
+    }
 }
 
 function renderLevel(levelData) {
     const scene = game.scene.scenes[0];
     const cellSize = 40; // pixels per character
+
+    //await loadGhostData(currentLevelKey);
 
     // Calculate level dimensions based on all elements
     const allElements = [
@@ -383,6 +511,13 @@ function renderLevel(levelData) {
     // Start timer
     timerStart = Date.now();
     timerRunning = true;
+    resetGhostRecording();
+
+    loadGhostData(currentLevelKey).then(() => {
+        startGhostPlayback(scene);
+    }).catch(() => {
+        activeGhostData = null;
+    });
 
     // Display timer in top-left corner with black background box
     scene.add.rectangle(10, 10, 130, 36, 0x000000, 0.85)
@@ -397,16 +532,19 @@ function renderLevel(levelData) {
 }
 
 function handleSpikeCollision(player, spike) {
-    // Reset player to spawn point
+    // Reset player to spawn point, but keep timer running
     player.x = player.spawnPoint.x;
     player.y = player.spawnPoint.y;
     player.setVelocity(0, 0);
+    dropping = false;
 }
 
 function handleMonsterCollision(player, monster) {
+    // Reset player to spawn point, but keep timer running
     player.x = player.spawnPoint.x;
     player.y = player.spawnPoint.y;
     player.setVelocity(0, 0);
+    dropping = false;
 }
 
 function handleSpringCollision(player, spring) {
@@ -416,6 +554,7 @@ function handleSpringCollision(player, spring) {
 
 function handleFinishCollision(player, finish) {
     timerRunning = false;
+    if (ghostSprite) ghostSprite.setVisible(false);
     const finalTime = ((Date.now() - timerStart) / 1000).toFixed(3);
 
     const scene = game.scene.scenes[0];
@@ -490,12 +629,26 @@ function handleFinishCollision(player, finish) {
 
         document.getElementById('submitScoreBtn').addEventListener('click', async () => {
             const name = document.getElementById('playerName').value.trim();
-            if (!name) return;
+         if (!name) return;
+
+            // Make sure the final player position is captured
+            ghostRunData.push({
+                t: Math.round(parseFloat(finalTime) * 1000),
+                x: player.x,
+                y: player.y
+            });
+
             await fetch('/api/submit-score', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ level: currentLevelKey, name, time: parseFloat(finalTime) })
+                body: JSON.stringify({
+                    level: currentLevelKey,
+                    name,
+                    time: parseFloat(finalTime),
+                    ghostPath: ghostRunData
+                })
             });
+
             document.getElementById('submit-section').innerHTML = `<div style="color:#555; font-size:14px;">Score submitted!</div>`;
         });
     }
@@ -536,6 +689,12 @@ function returnToMenu() {
     if (mainNav) mainNav.style.display = '';
 
     document.body.style.overflow = 'hidden';
+    activeGhostData = null;
+
+    if (ghostSprite) {
+        ghostSprite.destroy();
+        ghostSprite = null;
+    }
 
     game.scene.stop();
     game.scene.start();
@@ -604,11 +763,7 @@ function update() {
         const elapsed = ((Date.now() - timerStart) / 1000).toFixed(3);
         timerText.setText(elapsed + 's');
     }
+    recordGhostSample();
+    updateGhostPlayback();
 
-    // Kill player if they fall below the level
-    if (currentLevelHeight > 0 && player.spawnPoint && player.y > currentLevelHeight + 50) {
-        player.x = player.spawnPoint.x;
-        player.y = player.spawnPoint.y;
-        player.setVelocity(0, 0);
-    }
 }
