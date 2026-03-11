@@ -71,8 +71,9 @@ Different characters mean different things in Textplorer!
 
 ## Repository Layout
 Our repository is divided up into 5 parts. 
-- Top level directory: contains informational files, README.md, SETUP.md, INSTALL.md, developerguidelines.md, and user_manual.md.  Contains Procfile, package.json, and server.js to allow users to easily build and host the software on their own
-- /public: contains the bulk of the source code for our game.  html and css files for the website, game.js for game logic, as well as game assets.
-- /parser: contains the logic for our .txt file parser
-- /reports: contains weekly reports made for our client during development lifecycle
-- /test_cases: contains our test cases that our run via github actions and npm test
+- Top level directory: Contains informational files, README.md, SETUP.md, INSTALL.md, developerguidelines.md, and user_manual.md.  Contains Procfile, package.json, and server.js to allow users to easily build and host the software on their own
+
+- /public: Contains the bulk of the source code for our game.  html and css files for the website, game.js for game logic, as well as game assets.
+- /parser: Contains the logic for our .txt file parser
+- /reports: Contains weekly reports made for our client during development lifecycle
+- /test_cases: Contains our test cases that our run via github actions and npm test
