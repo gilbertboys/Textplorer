@@ -13,8 +13,9 @@ const PORT = process.env.PORT || 3000;
 const upload = multer({ storage: multer.memoryStorage() });
 
 // Path for storing user-uploaded levels
-const userLevelsPath = path.join(__dirname, "user-levels.json");
-const ghostsPath = path.join(__dirname, "ghosts.json");
+const dataDir = process.env.DATA_DIR || __dirname;
+const userLevelsPath = () => path.join(dataDir, "user-levels.json");
+const ghostsPath     = () => path.join(dataDir, "ghosts.json");
 
 // Helper to load user levels from JSON file
 function loadUserLevels() {
@@ -54,8 +55,7 @@ function getLevelKeyFromFilename(filename) {
 
 // Helper to clear scores for a specific level
 function clearScoresForLevel(levelKey) {
-  const scoresPath = path.join(__dirname, "scores.json");
-  if (!fs.existsSync(scoresPath)) return;
+  const scoresPath = path.join(dataDir, "scores.json");  if (!fs.existsSync(scoresPath)) return;
   try {
     let scores = JSON.parse(fs.readFileSync(scoresPath, "utf-8"));
     scores = scores.filter(s => s.level !== levelKey);
@@ -209,8 +209,7 @@ app.get("/api/get-user-level", (req, res) => {
 // GET /api/get-scores?level=easy
 app.get("/api/get-scores", (req, res) => {
   try {
-    const scoresPath = path.join(__dirname, "scores.json");
-    if (!fs.existsSync(scoresPath)) return res.json([]);
+    const scoresPath = path.join(dataDir, "scores.json");    if (!fs.existsSync(scoresPath)) return res.json([]);
     const scores = JSON.parse(fs.readFileSync(scoresPath, "utf-8"));
     const level = req.query.level;
     const filtered = scores
@@ -245,8 +244,7 @@ app.post("/api/submit-score", (req, res) => {
       return res.status(400).json({ error: "Missing fields." });
     }
 
-    const scoresPath = path.join(__dirname, "scores.json");
-    let scores = [];
+    const scoresPath = path.join(dataDir, "scores.json");    let scores = [];
 
     if (fs.existsSync(scoresPath)) {
       scores = JSON.parse(fs.readFileSync(scoresPath, "utf-8"));
@@ -294,3 +292,6 @@ app.post("/api/submit-score", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
+module.exports = app;
