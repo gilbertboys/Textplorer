@@ -1,13 +1,10 @@
-# Textplorer
-This is the respository for our CS 362 project
-
 ## HOW TO PLAY
 Visit https://textplorer-cs362-85c336ddf2eb.herokuapp.com/ to run and play our game!
 
 (To build/host locally, read SETUP.md)
 
 ## OPERATIONAL USE CASES 
-### (Read living document in /documents/Team 1 CS362-Living_Document 21426.pdf for more detailed descriptions)
+### (Read living_document.pdf for more detailed descriptions of the use cases)
 
 - Level Creation and Loading
 - Player Movement and Physics
@@ -73,4 +70,9 @@ Different characters mean different things in Textplorer!
   - The level must contain **exactly one goal tile (`#`)**
 
 ## Repository Layout
-Our repository will be divided up into many sub-parts of our project. This will include <u>documents<u> we design for the program planning, the <u>software<u> of the program which will also be split up into smaller parts based on our game features, and the <u>user interface<u> which will design how our project will be delivered to players and info on the visual aspects of the game. As we move forward with the project, the layout of the repository will improve based on how we want our organization to change and what new decisions are being made.
+Our repository is divided up into 5 parts. 
+- Top level directory: contains informational files, README.md, SETUP.md, INSTALL.md, developerguidelines.md, and user_manual.md.  Contains Procfile, package.json, and server.js to allow users to easily build and host the software on their own
+- /public: contains the bulk of the source code for our game.  html and css files for the website, game.js for game logic, as well as game assets.
+- /parser: contains the logic for our .txt file parser
+- /reports: contains weekly reports made for our client during development lifecycle
+- /test_cases: contains our test cases that our run via github actions and npm test
