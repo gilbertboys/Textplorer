@@ -76,4 +76,4 @@ Our repository is divided up into 5 parts.
 - /public: Contains the bulk of the source code for our game.  html and css files for the website, game.js for game logic, as well as game assets.
 - /parser: Contains the logic for our .txt file parser
 - /reports: Contains weekly reports made for our client during development lifecycle
-- /test_cases: Contains our test cases that our run via github actions and npm test
+- /test_cases: Contains our test cases that run via github actions and npm test
