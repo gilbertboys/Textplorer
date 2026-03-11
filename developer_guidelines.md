@@ -30,7 +30,7 @@ you will have a directory with all our created source code and you can access an
 12. `living_document.pdf` - Contains project description, goals, use cases, and the process of development.
 13. `package.json` - Defines all project dependencies and npm scripts including `npm start` and `npm test`.
 14. `server.js` - The main Express server file that handles API routes for parsing and loading levels.
-15. 'textplorer_user_manual.pdf' - Explains the game to a non-developer
+15. `textplorer_user_manual.pdf` - Explains the game to a non-developer
 
 ## How to Build the Software
 As described previously, building the software requires the npm scripts defined in the package.json files. If you want to
