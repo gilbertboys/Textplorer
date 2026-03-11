@@ -19,9 +19,9 @@ const ghostsPath     = () => path.join(dataDir, "ghosts.json");
 
 // Helper to load user levels from JSON file
 function loadUserLevels() {
-  if (!fs.existsSync(userLevelsPath)) return {};
+  if (!fs.existsSync(userLevelsPath())) return {};
   try {
-    return JSON.parse(fs.readFileSync(userLevelsPath, "utf-8"));
+    return JSON.parse(fs.readFileSync(userLevelsPath(), "utf-8"));
   } catch (err) {
     return {};
   }
@@ -29,20 +29,20 @@ function loadUserLevels() {
 
 // Helper to save user levels to JSON file
 function saveUserLevels(levels) {
-  fs.writeFileSync(userLevelsPath, JSON.stringify(levels, null, 2));
+  fs.writeFileSync(userLevelsPath(), JSON.stringify(levels, null, 2));
 }
 
 function loadGhosts() {
-  if (!fs.existsSync(ghostsPath)) return {};
+  if (!fs.existsSync(ghostsPath())) return {};
   try {
-    return JSON.parse(fs.readFileSync(ghostsPath, "utf-8"));
+    return JSON.parse(fs.readFileSync(ghostsPath(), "utf-8"));
   } catch (err) {
     return {};
   }
 }
 
 function saveGhosts(ghosts) {
-  fs.writeFileSync(ghostsPath, JSON.stringify(ghosts, null, 2));
+  fs.writeFileSync(ghostsPath(), JSON.stringify(ghosts, null, 2));
 }
 
 // Helper to get level key from filename
@@ -289,9 +289,11 @@ app.post("/api/submit-score", (req, res) => {
     return res.status(500).json({ error: "Failed to save score." });
   }
 });
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
 
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
 
 module.exports = app;

@@ -123,15 +123,15 @@ describe('getHitboxForSymbol - Jacob Munly', () => {
     test('Pipe | should be tall and narrow', () => {
         const hb = getHitboxForSymbol('|', 40);
         expect(hb.width).toBeLessThan(hb.height);
-        expect(hb.width).toBe(8);   // 40 * 0.2
-        expect(hb.height).toBe(36); // 40 * 0.9
+        expect(hb.width).toBe(8);
+        expect(hb.height).toBe(36);
     });
 
     test('Dash - should be wide and short', () => {
         const hb = getHitboxForSymbol('-', 40);
         expect(hb.width).toBeGreaterThan(hb.height);
-        expect(hb.width).toBe(32);  // 40 * 0.8
-        expect(hb.height).toBe(8);  // 40 * 0.2
+        expect(hb.width).toBe(32); 
+        expect(hb.height).toBe(8);
     });
 
     test('Underscore _ should have a vertical offset', () => {
