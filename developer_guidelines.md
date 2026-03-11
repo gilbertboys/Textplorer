@@ -66,14 +66,14 @@ level functionality is correct. Deploy in multiple web platforms as well to test
 7. Test in multiple browsers such as Chrome, Firefox, and Safari to catch any browser-specific rendering or input issues.
 
 ## Current Test Package Results (Updated 3/11/26)
-PASS  test_cases/parser.test.js
-PASS  test_cases/system.test.js
-PASS  test_cases/server.test.js
-PASS  test_cases/integration.test.js
+- PASS  test_cases/parser.test.js
+- PASS  test_cases/system.test.js
+- PASS  test_cases/server.test.js
+- PASS  test_cases/integration.test.js
 
-Test Suites: 4 passed, 4 total
-Tests:       30 passed, 30 total
-Snapshots:   0 total
+- Test Suites: 4 passed, 4 total
+- Tests:       30 passed, 30 total
+- Snapshots:   0 total
 
 ## How to Add New Test Cases
 When adding new tests into the package.json file, you need to follow consistent formatting patterns in order for everything to stay organized
