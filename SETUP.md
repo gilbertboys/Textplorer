@@ -34,4 +34,4 @@ to your program.
 8. Visit the live Heroku URL and perform a final round of testing to confirm the deployment is working as expected.
 9. Go to the GitHub repository's Releases page, click Draft a New Release, select the tag you created, write release notes describing what changed, and publish the release.
 
-# Read developer_guidelines.md to learn how to contribute to the project.
+### Read developer_guidelines.md to learn how to contribute to the project.
