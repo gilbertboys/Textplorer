@@ -116,3 +116,10 @@ Follow the Airbnb JavaScript Style Guide, viewable at https://github.com/airbnb/
 3. Game slowdown when many monsters (%) are on screen.
 4. Special characters (emojis, foreign language, ascii symbols) are often not rendered properly and have broken physics.
 
+## How To Report A Bug
+1. Go to our GitHub Issues page: https://github.com/gilbertboys/Textplorer/issues.
+2. Click "New Issue."
+3. Please include:
+  - A description of the bug (e.g., "After landing on a spike I respawned under the level").
+  - Steps to reproduce the issue.
+  - If the bug happened on a specific level, please attach the .txt file.
