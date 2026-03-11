@@ -675,15 +675,19 @@ function returnToMenu() {
     if (gameContainer) gameContainer.style.display = 'none';
 
     const mainHeader = document.querySelector('header.main');
-    if (mainHeader) {
-        mainHeader.style.display = 'flex';
-        mainHeader.style.flexDirection = 'column';
-        mainHeader.style.justifyContent = 'center';
-        mainHeader.style.alignItems = 'center';
-    }
+    if (mainHeader) mainHeader.style.display = '';
 
     const uploadPanel = document.getElementById('uploadPanel');
     if (uploadPanel) uploadPanel.classList.remove('visible');
+
+    const searchPanel = document.getElementById('searchPanel');
+    if (searchPanel) searchPanel.classList.remove('visible');
+
+    const levelsPanel = document.getElementById('levelsPanel');
+    if (levelsPanel) levelsPanel.classList.remove('visible');
+
+    const leaderboardPanel = document.getElementById('leaderboardPanel');
+    if (leaderboardPanel) leaderboardPanel.classList.remove('visible');
 
     const mainNav = document.querySelector('nav.main-menu');
     if (mainNav) mainNav.style.display = '';
@@ -696,8 +700,7 @@ function returnToMenu() {
         ghostSprite = null;
     }
 
-    game.scene.stop();
-    game.scene.start();
+    game.scene.stop('default');
 }
 
 function update() {

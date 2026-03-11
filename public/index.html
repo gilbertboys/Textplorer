@@ -15,7 +15,7 @@
             
             <nav class="main-menu">
                 <ul>
-                    <li><a class="menu-btn" href="levels.html">Play Sample Levels</a></li>
+                    <li><a class="menu-btn" id="levelsMenuBtn">Play Sample Levels</a></li>
                     <li><a class="menu-btn" id="uploadMenuBtn">Upload Your Own Level</a></li>
                     <li><a class="menu-btn" id="searchMenuBtn">Search User Levels</a></li>
                     <li><button id="about-btn" class="menu-btn">About</button></li>
@@ -38,8 +38,8 @@
             <!-- Search Panel (hidden until user clicks "Search User Levels") -->
             <div id="searchPanel" class="upload-panel">
                 <div style="display: flex; gap: 10px; align-items: center;">
-                    <input id="searchInput" type="text" placeholder="Search by level name..." 
-                           style="background: #111; color: #fff; border: 1px solid #9cb4f1; 
+                    <input id="searchInput" type="text" placeholder="Search by level name..."
+                           style="background: #111; color: #fff; border: 1px solid #9cb4f1;
                                   padding: 8px 12px; font-family: 'Courier New', monospace;
                                   font-size: 16px; width: 250px;" autocomplete="off" />
                     <button id="searchBtn" class="menu-btn">Search</button>
@@ -47,6 +47,30 @@
                 <p id="searchStatus" class="upload-status"></p>
                 <div id="searchResults" style="max-height: 400px; overflow-y: auto; width: 100%; max-width: 600px;"></div>
                 <button id="searchBackBtn" class="menu-btn" style="margin-top: 20px;">← Back</button>
+            </div>
+
+            <!-- Level Selection Panel (hidden until user clicks "Play Sample Levels") -->
+            <div id="levelsPanel" class="upload-panel">
+                <p style="color: #9cb4f1; font-size: 18px; margin-bottom: 20px;">Choose Your Challenge</p>
+                <nav class="main-menu">
+                    <ul>
+                        <li><a class="menu-btn" id="easyBtn">Easy</a></li>
+                        <li><a class="menu-btn" id="mediumBtn">Medium</a></li>
+                        <li><a class="menu-btn" id="hardBtn">Hard</a></li>
+                        <li><a class="menu-btn" id="veryhardBtn">Very Hard</a></li>
+                        <li><a class="menu-btn" id="impossibleBtn">Impossible</a></li>
+                    </ul>
+                </nav>
+                <button id="leaderboardBtn" class="menu-btn" style="margin-top: 20px;">Leaderboard</button>
+                <button id="levelsBackBtn" class="menu-btn" style="margin-top: 20px;">← Back</button>
+            </div>
+
+            <!-- Leaderboard Panel (hidden until user clicks "Leaderboard") -->
+            <div id="leaderboardPanel" class="upload-panel">
+                <h2 style="color: #9cb4f1; margin-bottom: 10px;">LEADERBOARD</h2>
+                <p style="color: #666; margin-bottom: 20px;">Top 10 Times Per Level</p>
+                <div id="leaderboard-container" style="width: 100%; max-width: 600px; max-height: 400px; overflow-y: auto;"></div>
+                <button id="leaderboardBackBtn" class="menu-btn" style="margin-top: 20px;">← Back</button>
             </div>
 
         </div>
@@ -290,38 +314,130 @@
     });
     </script>
 
-    <!-- JS for Play Sample Level -->
+    <!-- JS for Play Sample Levels -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const playSampleBtn = document.getElementById('playSampleBtn');
-        const gameContainer = document.getElementById('game-container');
+        const levelsMenuBtn = document.getElementById('levelsMenuBtn');
+        const levelsPanel = document.getElementById('levelsPanel');
+        const levelsBackBtn = document.getElementById('levelsBackBtn');
+        const leaderboardBtn = document.getElementById('leaderboardBtn');
+        const leaderboardPanel = document.getElementById('leaderboardPanel');
+        const leaderboardBackBtn = document.getElementById('leaderboardBackBtn');
+        const mainNav = document.querySelector('nav.main-menu');
         const mainHeader = document.querySelector('header.main');
+        const gameContainer = document.getElementById('game-container');
 
-        playSampleBtn.addEventListener('click', async function(e) {
-            e.preventDefault();
-            try {
-                // Load sample level
-                const response = await fetch('/api/load-sample-level');
-                if (!response.ok) {
-                    alert('Failed to load sample level');
-                    return;
+        function showLevelsPanel() {
+            levelsPanel.classList.add('visible');
+            mainNav.style.display = 'none';
+        }
+
+        function hideLevelsPanel() {
+            levelsPanel.classList.remove('visible');
+            mainNav.style.display = '';
+        }
+
+        function showLeaderboardPanel() {
+            levelsPanel.classList.remove('visible');
+            leaderboardPanel.classList.add('visible');
+            loadLeaderboards();
+        }
+
+        function hideLeaderboardPanel() {
+            leaderboardPanel.classList.remove('visible');
+            levelsPanel.classList.add('visible');
+        }
+
+        const levelKeys = ['easy', 'medium', 'hard', 'veryhard', 'impossible'];
+        const levelLabels = {
+            easy: 'Easy',
+            medium: 'Medium',
+            hard: 'Hard',
+            veryhard: 'Very Hard',
+            impossible: 'Impossible'
+        };
+
+        async function loadLeaderboards() {
+            const container = document.getElementById('leaderboard-container');
+            container.innerHTML = '<p style="color:#555;">Loading...</p>';
+
+            let html = '';
+            for (const key of levelKeys) {
+                try {
+                    const scores = await fetch('/api/get-scores?level=' + key).then(r => r.json());
+
+                    html += '<div style="margin-bottom: 30px; text-align: left;">';
+                    html += '<h3 style="color:#9cb4f1; font-family:\'Courier New\',monospace; border-bottom: 1px solid #333; padding-bottom: 8px;">' + levelLabels[key] + '</h3>';
+
+                    if (scores.length === 0) {
+                        html += '<p style="color:#555;">No times yet.</p>';
+                    } else {
+                        scores.slice(0, 10).forEach((s, i) => {
+                            html += '<p style="margin: 6px 0; color:#ccc; font-family:\'Courier New\',monospace;">' +
+                                (i + 1) + '.  ' + s.name.padEnd(20) + '  ' + s.time.toFixed(3) + 's</p>';
+                        });
+                    }
+                    html += '</div>';
+                } catch (err) {
+                    html += '<div style="margin-bottom: 30px;"><h3 style="color:#9cb4f1;">' + levelLabels[key] + '</h3><p style="color:#555;">Error loading scores.</p></div>';
                 }
-
-                const levelData = await response.json();
-
-                // Set level data and show game
-                currentLevelData = levelData;
-                mainHeader.style.display = 'none';
-                gameContainer.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-
-                // Restart game scene with new level data
-                game.scene.stop('default');
-                game.scene.start('default', { levelData: levelData });
-            } catch (err) {
-                alert('Error loading level: ' + err.message);
-                console.error(err);
             }
+            container.innerHTML = html;
+        }
+
+        levelsMenuBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showLevelsPanel();
+        });
+
+        levelsBackBtn.addEventListener('click', hideLevelsPanel);
+        leaderboardBtn.addEventListener('click', showLeaderboardPanel);
+        leaderboardBackBtn.addEventListener('click', hideLeaderboardPanel);
+
+        // ESC to close panels
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (leaderboardPanel.classList.contains('visible')) {
+                    hideLeaderboardPanel();
+                } else if (levelsPanel.classList.contains('visible')) {
+                    hideLevelsPanel();
+                }
+            }
+        });
+
+        // Level buttons
+        const levels = {
+            easyBtn: 'easy',
+            mediumBtn: 'medium',
+            hardBtn: 'hard',
+            veryhardBtn: 'veryhard',
+            impossibleBtn: 'impossible'
+        };
+
+        Object.entries(levels).forEach(([btnId, levelKey]) => {
+            document.getElementById(btnId).addEventListener('click', async function(e) {
+                e.preventDefault();
+                try {
+                    const response = await fetch('/api/load-sample-level?level=' + levelKey);
+                    if (!response.ok) {
+                        alert('Failed to load level');
+                        return;
+                    }
+                    const levelData = await response.json();
+
+                    currentLevelData = levelData;
+                    currentLevelKey = levelKey;
+                    levelsPanel.classList.remove('visible');
+                    mainHeader.style.display = 'none';
+                    gameContainer.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+
+                    game.scene.stop('default');
+                    game.scene.start('default', { levelData: levelData });
+                } catch (err) {
+                    alert('Error: ' + err.message);
+                }
+            });
         });
     });
     </script>
