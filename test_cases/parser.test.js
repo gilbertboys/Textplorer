@@ -82,6 +82,22 @@ describe("Textplorer Parser - Norman Nomie", () => {
     });
 });
 
+function getHitboxForSymbol(symbol, cellSize) {
+    const hitboxes = {
+        '|': { width: cellSize * 0.2,  height: cellSize * 0.9 },
+        '-': { width: cellSize * 0.8,  height: cellSize * 0.2 },
+        '_': { width: cellSize * 0.8,  height: cellSize * 0.05, offsetY: cellSize * 0.7 },
+        '#': { width: cellSize * 0.85, height: cellSize * 0.85 },
+        '^': { width: cellSize * 0.7,  height: cellSize * 0.6 },
+        'Z': { width: cellSize * 0.7,  height: cellSize * 0.8 },
+        '.': { width: cellSize * 0.2,  height: cellSize * 0.2 },
+        '[': { width: cellSize * 0.4,  height: cellSize * 0.85 },
+        'W': { width: cellSize * 0.9,  height: cellSize * 0.8 },
+        'I': { width: cellSize * 0.3,  height: cellSize * 0.8 },
+    };
+    return hitboxes[symbol] || { width: cellSize * 0.8, height: cellSize * 0.8 };
+}
+
 describe('getHitboxForSymbol - Jacob Munly', () => {
 
     test('Pipe | should be tall and narrow', () => {
