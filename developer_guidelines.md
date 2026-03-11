@@ -17,19 +17,20 @@ you will have a directory with all our created source code and you can access an
 
 ## Layout of Directory Structure
 1. `.github/workflows/` - Contains CI/CD workflow files such as the Node.js automated testing pipeline that runs on every push.
-4. `parser/` - JavaScript files containing the core parsing logic that converts uploaded .txt files into structured level data the game engine can render.
-5. `public/` - All client-side code served to the browser, including HTML pages, CSS stylesheets, game images, game logic, and sample level .txt files.
-6. `reports/` - Weekly status reports created throughout development to document progress, completed tasks, and upcoming work.
-7. `test_cases/` - All automated test files. New tests should be added here following existing naming conventions.
-8. `.gitignore` - Specifies files and folders Git should not track, such as `node_modules/`.
-9. `INSTALL.d` - Barebones instructions on how to open the website
-10. `Procfile` - Tells Heroku how to start the application when deployed to production.
-11. `README.md` - The top-level project overview visible on the GitHub repository home page, including setup and usage instructions.
-12. `SETUP.md` - Instructions on how to obtain the source code and host the game locally or on the web.
-13. `living_document.pdf` - Contains project description, goals, use cases, and the process of development.
-14. `package.json` - Defines all project dependencies and npm scripts including `npm start` and `npm test`.
-15. `server.js` - The main Express server file that handles API routes for parsing and loading levels.
-16. textplorer_user_manual.pdf - Explains the game to a non-developer
+2. `parser/` - JavaScript files containing the core parsing logic that converts uploaded .txt files into structured level data the game engine can render.
+3. `public/` - All client-side code served to the browser, including HTML pages, CSS stylesheets, game images, game logic, and sample level .txt files.
+4. `reports/` - Weekly status reports created throughout development to document progress, completed tasks, and upcoming work.
+5. `test_cases/` - All automated test files. New tests should be added here following existing naming conventions.
+6. `.gitignore` - Specifies files and folders Git should not track, such as `node_modules/`.
+7. `INSTALL.d` - Barebones instructions on how to open the website
+8. `Procfile` - Tells Heroku how to start the application when deployed to production.
+9. `README.md` - The top-level project overview visible on the GitHub repository home page, including setup and usage instructions.
+10. `SETUP.md` - Instructions on how to obtain the source code and host the game locally or on the web.
+11. `developer_guidelines` Detailed description on how to obtain the source code and contribute to the development of the project.
+12. `living_document.pdf` - Contains project description, goals, use cases, and the process of development.
+13. `package.json` - Defines all project dependencies and npm scripts including `npm start` and `npm test`.
+14. `server.js` - The main Express server file that handles API routes for parsing and loading levels.
+15. 'textplorer_user_manual.pdf' - Explains the game to a non-developer
 
 ## How to Build the Software
 As described previously, building the software requires the npm scripts defined in the package.json files. If you want to
