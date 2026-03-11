@@ -54,6 +54,7 @@ The following keys are used to control the player:
 ## Creating Custom Levels
 
 Textplorer allows users to design their own platformer levels using simple text files. Each character represents a different object in the game.
+Read textplorer_user_manual.pdf for a more detailed description of level creation.
 
 **Character Meanings:**
 Different characters mean different things in Textplorer!
