@@ -8,6 +8,7 @@
  *  # = finish
  *  Z = spring
  *  ' ' (space) = empty
+ *  % = monster
  *  everything else = wall
  *
  * Output uses x,y coordinates where:
