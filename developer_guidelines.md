@@ -65,6 +65,16 @@ level functionality is correct. Deploy in multiple web platforms as well to test
 6. Complete a sample level and verify the leaderboard screen appears, the timer displays correctly, and score submission works.
 7. Test in multiple browsers such as Chrome, Firefox, and Safari to catch any browser-specific rendering or input issues.
 
+## Current Test Package Results (Updated 3/11/26)
+PASS  test_cases/parser.test.js
+PASS  test_cases/system.test.js
+PASS  test_cases/server.test.js
+PASS  test_cases/integration.test.js
+
+Test Suites: 4 passed, 4 total
+Tests:       30 passed, 30 total
+Snapshots:   0 total
+
 ## How to Add New Test Cases
 When adding new tests into the package.json file, you need to follow consistent formatting patterns in order for everything to stay organized
 and run correctly. Test case names should also match what they are testing. New test cases will be created in the test_cases folder found in the root
@@ -100,4 +110,9 @@ program on GitHub by going to the repository's releases page and drafting a new 
 ## Coding Style Guidelines
 Follow the Airbnb JavaScript Style Guide, viewable at https://github.com/airbnb/javascript.
 
+## Known issues (Updated 3/11/26)
+1. Tab spaces in .txt files do not behave properly in game.
+2. Game slowdown when user zooms out with Ctrl -.
+3. Game slowdown when many monsters (%) are on screen.
+4. Special characters (emojis, foreign language, ascii symbols) are often not rendered properly and have broken physics.
 
