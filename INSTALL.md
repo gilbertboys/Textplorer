@@ -1,2 +1,2 @@
 - Visit https://textplorer-cs362-85c336ddf2eb.herokuapp.com/ to use our software.
-- Click "How To Play" for a description of the game and it's rules.
+- Click "How To Play" on the website or read textplorer_user_manual.pdf in this repository for a description of the game and it's rules.
