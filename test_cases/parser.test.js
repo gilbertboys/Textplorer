@@ -98,7 +98,7 @@ describe("Textplorer Parser - Drew Inglesby", () => {
         expect(result.finish).toEqual({ x: 8, y: 2 });
         expect(result.width).toBe(9);
         expect(result.height).toBe(5);
-        expect(result.spikes).toContainEqual({ x: 4, y: 1 });
+        expect(result.spikes).toContainEqual({ x: 5, y: 1 });
     });
 });
 
