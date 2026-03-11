@@ -82,6 +82,26 @@ describe("Textplorer Parser - Norman Nomie", () => {
     });
 });
 
+describe("Textplorer Parser - Drew Inglesby", () => {
+
+    test('Should correctly parse a level with mixed hazard types', () => {
+        const levelData = 
+`****Z****
+*$   ^  *
+*   -   #
+*|      *
+*********`;
+
+        const result = parseLevelText(levelData);
+
+        expect(result.spawn).toEqual({ x: 1, y: 1 });
+        expect(result.finish).toEqual({ x: 8, y: 2 });
+        expect(result.width).toBe(9);
+        expect(result.height).toBe(5);
+        expect(result.spikes).toContainEqual({ x: 4, y: 1 });
+    });
+});
+
 function getHitboxForSymbol(symbol, cellSize) {
     const hitboxes = {
         '|': { width: cellSize * 0.2,  height: cellSize * 0.9 },
