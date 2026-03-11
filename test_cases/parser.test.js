@@ -81,3 +81,58 @@ describe("Textplorer Parser - Norman Nomie", () => {
 	expect(() => parseLevelText(levelData)).toThrow();
     });
 });
+
+describe('getHitboxForSymbol - Jacob Munly', () => {
+
+    test('Pipe | should be tall and narrow', () => {
+        const hb = getHitboxForSymbol('|', 40);
+        expect(hb.width).toBeLessThan(hb.height);
+        expect(hb.width).toBe(8);   // 40 * 0.2
+        expect(hb.height).toBe(36); // 40 * 0.9
+    });
+
+    test('Dash - should be wide and short', () => {
+        const hb = getHitboxForSymbol('-', 40);
+        expect(hb.width).toBeGreaterThan(hb.height);
+        expect(hb.width).toBe(32);  // 40 * 0.8
+        expect(hb.height).toBe(8);  // 40 * 0.2
+    });
+
+    test('Underscore _ should have a vertical offset', () => {
+        const hb = getHitboxForSymbol('_', 40);
+        expect(hb.offsetY).toBeDefined();
+        expect(hb.offsetY).toBeGreaterThan(0);
+    });
+
+    test('Unknown symbol should return default hitbox', () => {
+        const hb = getHitboxForSymbol('?', 40);
+        expect(hb.width).toBe(40 * 0.8);
+        expect(hb.height).toBe(40 * 0.8);
+    });
+
+    test('Spike ^ should have non-zero dimensions', () => {
+        const hb = getHitboxForSymbol('^', 40);
+        expect(hb.width).toBeGreaterThan(0);
+        expect(hb.height).toBeGreaterThan(0);
+    });
+
+    test('Wide character W should be wider than narrow character I', () => {
+        const wHb = getHitboxForSymbol('W', 40);
+        const iHb = getHitboxForSymbol('I', 40);
+        expect(wHb.width).toBeGreaterThan(iHb.width);
+    });
+
+    test('Hitbox dimensions should scale proportionally with cellSize', () => {
+        const hb20 = getHitboxForSymbol('#', 20);
+        const hb40 = getHitboxForSymbol('#', 40);
+        expect(hb40.width).toBe(hb20.width * 2);
+        expect(hb40.height).toBe(hb20.height * 2);
+    });
+
+    test('Small punctuation . should be smaller than block character #', () => {
+        const dotHb  = getHitboxForSymbol('.', 40);
+        const hashHb = getHitboxForSymbol('#', 40);
+        expect(dotHb.width).toBeLessThan(hashHb.width);
+        expect(dotHb.height).toBeLessThan(hashHb.height);
+    });
+});
