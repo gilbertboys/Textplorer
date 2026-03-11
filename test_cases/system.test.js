@@ -73,4 +73,49 @@ describe('System tests', () => {
         const res = await get('/api/get-scores?level=sys-test');
         expect(res.body.some(s => s.name === 'SystemTester')).toBe(true);
     });
+
+    test('handles concurrent requests in a multi-user environment', async () => {
+        const level = 'concurrent-test';
+        const userCount = 10;
+
+        // Simulate multiple users submitting scores simultaneously
+        const submitPromises = [];
+        for (let i = 0; i < userCount; i++) {
+            submitPromises.push(
+                post('/api/submit-score', {
+                    level,
+                    name: `ConcurrentUser${i}`,
+                    time: 5.0 + (i * 0.1),
+                    ghostPath: []
+                })
+            );
+        }
+
+        const submitResults = await Promise.all(submitPromises);
+
+        // All submissions should succeed
+        submitResults.forEach((res, i) => {
+            expect(res.status).toBe(200);
+        });
+
+        // Simulate concurrent reads while verifying all scores are present
+        const readPromises = [];
+        for (let i = 0; i < 5; i++) {
+            readPromises.push(get(`/api/get-scores?level=${level}`));
+        }
+
+        const readResults = await Promise.all(readPromises);
+
+        // All reads should return consistent data
+        readResults.forEach(res => {
+            expect(res.status).toBe(200);
+            expect(res.body.length).toBeGreaterThanOrEqual(userCount);
+        });
+
+        // Verify all concurrent users are in the leaderboard
+        const finalRes = await get(`/api/get-scores?level=${level}`);
+        for (let i = 0; i < userCount; i++) {
+            expect(finalRes.body.some(s => s.name === `ConcurrentUser${i}`)).toBe(true);
+        }
+    });
 });
