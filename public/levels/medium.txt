@@ -5,8 +5,8 @@ MEDIUM LEVEL                      |
 PPPPPPPP     PPPPP     PPPPP      |     Z
         ^^^^^     ^^^^^^    ^^^^^^ PPPPPPP^^^^PPPPP 
 
- #              ^^^
-
+ #              
+                ^^^
 PPPP ^^^^ PPPPPP   PPPPPP   PPP PPPPP    PPPP  P P P   PPPPP P P 
 
 
